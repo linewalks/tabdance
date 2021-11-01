@@ -9,7 +9,7 @@ from tqdm import tqdm
 def get_config():
   """config 설정값 가져오기"""
   config = ConfigParser()
-  config_path = f"{os.getcwd()}/dvm.cfg"
+  config_path = os.path.join(os.getcwd(), "dvm.cfg")
   config.read(config_path)
   return config
 
@@ -58,6 +58,7 @@ if __name__ == "__main__":
   elif args.file is not None:
     files = []
     for file in args.file:
+      #TODO: "-f file_name" 처럼 확장자 없이 입력 받을 때 자동으로 그에 관련된 필요한 파일 up/down 되도록 (.meta, .csv)
       files.append(file)
 
   if not files:
