@@ -5,12 +5,14 @@ import paramiko
 from configparser import ConfigParser
 from tqdm import tqdm
 
+
 def get_config():
   """config 설정값 가져오기"""
   config = ConfigParser()
   config_path = f"{os.getcwd()}/dvm.cfg"
   config.read(config_path)
   return config
+
 
 def get_args():
   """스크립트 옵션 값 가져오는 함수"""
@@ -33,6 +35,7 @@ def get_args():
 
   return args
 
+
 if __name__ == "__main__":
   config = get_config()
   host_name = config["REMOTE_INFO"]["REMOTE_HOST_NAME"]
@@ -40,7 +43,7 @@ if __name__ == "__main__":
   user_password = config["REMOTE_INFO"]["REMOTE_USER_PASSWORD"]
   local_repo_path = config["PATH"]["LOCAL_REPO_PATH"]
   remote_repo_path = config["PATH"]["REMOTE_REPO_PATH"]
-  
+
   ssh_client = paramiko.SSHClient()
   ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
   ssh_client.connect(host_name, username=user_name, password=user_password)
