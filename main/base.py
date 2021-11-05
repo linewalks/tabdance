@@ -49,6 +49,7 @@ def get_files(args, exists_file_list) -> list:
 
   elif args.all is None:
     # -a: 확장자 구분없이 모든 파일
+    # TODO: gitignore처럼 무시할 파일 리스트 or 단순히 첫번째 문자가 .인 경우는 모두 제외하는 방법 고려
     if ".DS_Store" in exists_file_list:
       exists_file_list.remove(".DS_Store")  
     files = exists_file_list
