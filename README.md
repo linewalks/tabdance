@@ -64,3 +64,8 @@ $ python download.py -f file_name
 # 여러 파일 다운로드
 $ python download.py -f file_name1 file_name2
 ```
+
+## Contact
+- 채정우 - jungwoo@linewalks.com
+- 이유나 - una944@linewalks.com
+- 최인수 - insu@linewalks.com
