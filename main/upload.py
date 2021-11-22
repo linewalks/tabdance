@@ -33,7 +33,7 @@ if __name__ == "__main__":
   td_files = []
   for file in files:
     if file.endswith(".meta"):
-      with open(f"{local_repo_path}/{file}", "r") as meta_file:
+      with open(os.path.join(local_repo_path, file), "r") as meta_file:
         table_name = json.load(meta_file)["table_name"] + ".td"
 
         if table_name not in os.listdir(local_repo_path):
