@@ -56,7 +56,7 @@ def get_files(args, exists_file_list) -> list:
 
     files = []
     for file in exists_file_list:
-      if not file.endswith('.td'):
+      if not file.endswith(".td"):
         files.append(file)
 
   return files
