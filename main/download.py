@@ -1,4 +1,5 @@
 import json
+import os
 import paramiko
 
 from base import (
@@ -46,7 +47,7 @@ if __name__ == "__main__":
   # file download
   try:
     for file in files:
-      local_path = f"{local_repo_path}/{file}"
+      local_path = os.path.join(local_repo_path, file)
       remote_path = f"{remote_repo_path}/{file}"
       print(file)
       sftp.get(remote_path, local_path, callback=callback_progressbar)
