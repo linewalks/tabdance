@@ -47,7 +47,7 @@ if __name__ == "__main__":
   # file upload
   try:
     for file in files:
-      local_path = f"{local_repo_path}/{file}"
+      local_path = os.path.join(local_repo_path, file)
       remote_path = f"{remote_repo_path}/{file}"
       print(file)
       sftp.put(local_path, remote_path, callback=callback_progressbar)
