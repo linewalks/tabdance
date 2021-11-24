@@ -4,6 +4,7 @@ import os
 import pandas as pd
 import time
 
+from configparser import ConfigParser
 from sqlalchemy import create_engine
 
 from base import get_config
@@ -18,12 +19,12 @@ def calculate_md5(csv_path: str) -> hex:
 
 
 class DBBase:
-  def __init__(self, config):
+  def __init__(self, config: ConfigParser):
     self.uri = config["DB"]["SQLALCHEMY_DATABASE_URI"]
     self.schema = config["DB"]["SCHEMA"]
     self.engine = create_engine(self.uri)
 
-  def load_sql(self, sql_path):
+  def load_sql(self, sql_path: str):
     with open(sql_path, "r") as fd:
       start_time = time.time()
       print(f"\n===========Start loading Sql script '{sql_path}'===========")
