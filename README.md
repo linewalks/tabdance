@@ -8,9 +8,9 @@ CLUE 기능 동작에 필요한 데이터를 최신 내역으로 유지 및 데�
 
 ### Installation
 1. Clone the repo
-2. Install Python packages
+2. Install setup.py
    ```sh
-   $ pip install -r requirements.txt
+   $ python setup.py install
    ```
 3. Set config file(`main/dvm.default.cfg 참고`) 
    ```sh
@@ -20,19 +20,10 @@ CLUE 기능 동작에 필요한 데이터를 최신 내역으로 유지 및 데�
 
 ## Usage
 
-### Change Directory
-아래에 작성된 Upload/Download 명령어를 실행하기 위해 main 폴더로 이동합니다.
-```sh
-$ cd main
-```
-
 ### 명령어 도움
 ```sh
-# upload 명령어 도움
-$ python upload.py -h
-
-# download 명령어 도움
-$ python download.py -h
+# table data sync 명령어 도움
+$ tds -h
 ```
 
 ### 파일 업로드
@@ -41,13 +32,13 @@ $ python download.py -h
 
 ```sh
 # 모든 파일 업로드
-$ python upload.py -a
+$ tds upload -a
 
 # 1개 파일 업로드
-$ python upload.py -f file_name
+$ tds upload -f file_name
 
 # 여러 파일 업로드
-$ python upload.py -f file_name1 file_name2
+$ tds upload -f file_name1 file_name2
 ```
 
 ### 파일 다운로드
@@ -56,13 +47,13 @@ $ python upload.py -f file_name1 file_name2
 
 ```sh
 # 모든 파일 다운로드
-$ python download.py -a
+$ tds download -a
 
 # 1개 파일 다운로드
-$ python download.py -f file_name
+$ tds download -f file_name
 
 # 여러 파일 다운로드
-$ python download.py -f file_name1 file_name2
+$ tds download -f file_name1 file_name2
 ```
 
 ## Contact
