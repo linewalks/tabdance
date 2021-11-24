@@ -7,7 +7,7 @@ import time
 from configparser import ConfigParser
 from sqlalchemy import create_engine
 
-from base import get_config
+from main.base import get_config
 
 
 def calculate_md5(csv_path: str) -> hex:
