@@ -11,11 +11,11 @@ from base import get_config
 
 
 def calculate_md5(csv_path: str) -> hex:
-    with open(csv_path, "rb") as f:
-      file_hash = hashlib.md5()
-      while chunk := f.read(8192):
-        file_hash.update(chunk)
-    return file_hash.hexdigest()
+  with open(csv_path, "rb") as f:
+    file_hash = hashlib.md5()
+    while chunk := f.read(8192):
+      file_hash.update(chunk)
+  return file_hash.hexdigest()
 
 
 class DBBase:
@@ -45,8 +45,8 @@ class DBBase:
     # Download csv to LOCAL_REPO_PATH must be first
     # Ex. python download.py -a
 
-    csv_list = sorted([csv for csv in os.listdir(file_dir) if csv.endswith(r".csv")])
-    meta_list = sorted([meta for meta in os.listdir(file_dir) if meta.endswith(r".meta")])
+    csv_list = sorted([csv for csv in os.listdir(file_dir) if csv.endswith(".csv")])
+    meta_list = sorted([meta for meta in os.listdir(file_dir) if meta.endswith(".meta")])
 
     hash_table = dict()
     csv_hash_list = []
