@@ -1,4 +1,4 @@
-# CLUE-Uploader
+# TDS (Table Data Sync)
 CLUE 기능 동작에 필요한 데이터를 최신 내역으로 유지 및 데이터 관리를 위한 프로젝트입니다.
 
 ## Getting Started
