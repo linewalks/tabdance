@@ -1,14 +1,5 @@
-import os
 from setuptools import setup, find_packages
 
-
-def read_requirements():
-  with open(os.path.join(os.getcwd(), "requirements.txt"), "r") as file:
-    packages = []
-    for line in file.readlines():
-      packages.append(line.strip())  
-  print(packages)
-  return packages
 
 setup(
     name="tds",
@@ -18,7 +9,12 @@ setup(
     author_email="insu@linewalks.com",
     python_requires=">= 3.8",
     packages=find_packages(),
-    install_requires=read_requirements(),
+    install_requires=[
+        "configparser==5.0.2",
+        "paramiko==2.8.0",
+        "pandas==1.3.4",
+        "SQLAlchemy==1.3.23"
+    ],
     zip_safe=False,
     entry_points={
         "console_scripts": [

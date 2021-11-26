@@ -12,9 +12,9 @@ CLUE 기능 동작에 필요한 데이터를 최신 내역으로 유지 및 데�
    ```sh
    $ python setup.py install
    ```
-3. Set config file(`main/dvm.default.cfg 참고`) 
+3. Set config file(`main/tds.default.cfg 참고`) 
    ```sh
-   $ cp main/dvm.default.cfg main/dvm.cfg
+   $ cp main/tds.default.cfg main/tds.cfg
    ```
    - 자세한 정보는 프로젝트 담당자에 문의
 
