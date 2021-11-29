@@ -5,6 +5,7 @@ import pandas as pd
 import time
 
 from configparser import ConfigParser
+from pathlib import Path
 from sqlalchemy import create_engine
 from sqlalchemy.engine.reflection import Inspector
 
@@ -50,7 +51,8 @@ class DBTableBase:
       db_object_list = inspector.get_table_names(schema=self.schema)
 
     if object_name not in db_object_list:
-      self.load_sql(os.path.join(os.getcwd(), "sql", "base", f"init_{db_object}.sql"))
+      path = Path(Path(__file__).resolve().parent, os.path.join("sql", "base", f"init_{db_object}.sql"))
+      self.load_sql(path)
 
   def init_db_object(self):
     for required_obj, name in zip(["schema", "table"], [self.schema, self.table]):
@@ -60,7 +62,7 @@ class DBTableBase:
     print(f"\n===========Inserting data into {self.table}===========")
     for row in row_list:
       with self.engine.connect() as conn:
-        path = os.path.join(os.getcwd(), "sql", "base", "init_tds_version.sql")
+        path = Path(Path(__file__).resolve().parent, os.path.join("sql", "base", "init_tds_version.sql"))
         self.load_sql(
           path,
           file_name=row["file_name"],
@@ -95,8 +97,9 @@ class DBTableSync(DBTableBase):
   def compare_tds_version(self, row_list: list):
     required_update_table = []  # Table list that needs synchronization
     required_update_hash = []   # Csv file list that needs to update a tds_version table
+    path = Path(Path(__file__).resolve().parent, os.path.join("sql", "compare_tds_version.sql"))
     for row in row_list:
-      with open(os.path.join(os.getcwd(), "sql", "compare_tds_version.sql"), "r") as fd:
+      with open(path, "r") as fd:
         select_csv_sql = fd.read().format(
           schema_name=self.schema,
           tds_version_table=self.table,
@@ -114,7 +117,7 @@ class DBTableSync(DBTableBase):
       for csv in required_update_hash:
         for row in row_list:
           if csv == row["file_name"]:
-            path = os.path.join(os.getcwd(), "sql", "update_tds_version.sql")
+            path = Path(Path(__file__).resolve().parent, os.path.join("sql", "update_tds_version.sql"))
             self.load_sql(
               path,
               file_name=row["file_name"],
@@ -128,11 +131,12 @@ class DBTableSync(DBTableBase):
     return required_update_table
 
   def sync_table(self):
-    with open(os.path.join(os.getcwd(), "sql", "select_tds_version.sql"), "r") as fd:
+    path = Path(Path(__file__).resolve().parent, os.path.join("sql", "select_tds_version.sql"))
+    with open(path, "r") as fd:
       select_sql = fd.read().format(schema_name=self.schema, tds_version_table=self.table)
       check_tds_table = self.engine.execute(select_sql).fetchone()
 
-    row_list = self.get_tds_version(os.path.join(os.getcwd(), "files"))
+    row_list = self.get_tds_version(Path(Path(__file__).resolve().parent, os.path.join("files")))
     if not check_tds_table:
       # Insert rows into tds_version table if there is no data
       super().init_tds_version(row_list)
