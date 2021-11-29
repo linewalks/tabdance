@@ -26,11 +26,17 @@ class DBTableBase:
     self.table = config["DB"]["TABLE"]
     self.engine = create_engine(self.uri)
 
-  def load_sql(self, sql_path: str):
+  def load_sql(self, sql_path: str, **kwargs):
     with open(sql_path, "r") as fd:
       start_time = time.time()
       print(f"\n===========Start loading Sql script '{sql_path}'===========")
-      sql = fd.read().format(schema_name=self.schema, table_name=self.table)
+      sql = fd.read().format(
+        schema_name=self.schema,
+        tds_version_table=self.table,
+        file_name=kwargs.get("file_name"),
+        table_name=kwargs.get("table_name"),
+        csv_hash=kwargs.get("csv_hash")
+      )
       self.engine.execute(sql)
       end_time = time.time()
       print(f"Time for loading sql script: {end_time-start_time:.2f}secs")
@@ -50,23 +56,17 @@ class DBTableBase:
     for required_obj, name in zip(["schema", "table"], [self.schema, self.table]):
       self.check_db_object(required_obj, name)
 
-  def init_hash_table(self, row_list: list):
+  def init_tds_version(self, row_list: list):
     print(f"\n===========Inserting data into {self.table}===========")
     for row in row_list:
       with self.engine.connect() as conn:
-        sql = """
-          INSERT INTO {schema_name}.{tds_version_table} VALUES (
-            '{file_name}', '{table_name}', '{csv_hash}'
-          )
-          """
-        sql = sql.format(
-          schema_name=self.schema,
-          tds_version_table=self.table,
+        path = os.path.join(os.getcwd(), "sql", "base", "init_tds_version.sql")
+        self.load_sql(
+          path,
           file_name=row["file_name"],
           table_name=row["table_name"],
           csv_hash=row["csv_hash"]
         )
-        result = conn.execute(sql)
     print(f"\n===========End of inserting data into {self.table}===========")
 
 
@@ -74,7 +74,7 @@ class DBTableSync(DBTableBase):
   def __init__(self, config):
     super().__init__(config)
 
-  def get_csv_version(self, file_dir: str) -> list:
+  def get_tds_version(self, file_dir: str) -> list:
     # Download csv to LOCAL_REPO_PATH must be first
     # Ex. tds download -a
     csv_list = sorted([csv for csv in os.listdir(file_dir) if csv.endswith(".csv")])
@@ -82,7 +82,7 @@ class DBTableSync(DBTableBase):
 
     hash_row_list = []
     for csv, meta in zip(csv_list, meta_list):
-      csv_meta_dict = dict()
+      csv_meta_dict = {}
       csv_meta_dict["file_name"] = csv
       csv_meta_dict["csv_hash"] = calculate_md5(os.path.join(file_dir, csv))
       with open(os.path.join(file_dir, meta), "r") as m:
@@ -92,37 +92,35 @@ class DBTableSync(DBTableBase):
 
     return hash_row_list
 
-  def compare_csv_version(self, row_list: list):
+  def compare_tds_version(self, row_list: list):
     required_update_table = []  # Table list that needs synchronization
-    required_update_hash = []   # Csv file list that needs to update a hash table
+    required_update_hash = []   # Csv file list that needs to update a tds_version table
     for row in row_list:
-      select_csv_sql = f"""
-        select table_name, file_name
-        from {self.schema}.{self.table}
-        where
-          file_name = '{row["file_name"]}'
-          AND table_name = '{row["table_name"]}'
-          AND csv_hash <> '{row["csv_hash"]}'
-        """
-      result = self.engine.execute(select_csv_sql).fetchone()
-      if result:
-        required_update_table.append(result[0])
-        required_update_hash.append(result[1])
+      with open(os.path.join(os.getcwd(), "sql", "compare_tds_version.sql"), "r") as fd:
+        select_csv_sql = fd.read().format(
+          schema_name=self.schema,
+          tds_version_table=self.table,
+          file_name=row["file_name"],
+          table_name=row["table_name"],
+          csv_hash=row["csv_hash"]
+        )
+        result = self.engine.execute(select_csv_sql).fetchone()
+        if result:
+          required_update_table.append(result[0])
+          required_update_hash.append(result[1])
 
-    # update to hash table
+    # update to tds_version table
     if required_update_hash:
       for csv in required_update_hash:
         for row in row_list:
           if csv == row["file_name"]:
-            update_hash_sql = f"""
-              update {self.schema}.{self.table}
-              set csv_hash = '{row["csv_hash"]}'
-              where
-                file_name = '{row["file_name"]}'
-                AND table_name = '{row["table_name"]}'
-                AND csv_hash <> '{row["csv_hash"]}'
-            """
-            self.engine.execute(update_hash_sql)
+            path = os.path.join(os.getcwd(), "sql", "update_tds_version.sql")
+            self.load_sql(
+              path,
+              file_name=row["file_name"],
+              table_name=row["table_name"],
+              csv_hash=row["csv_hash"]
+            )
 
     # return required update table list
     if required_update_table:
@@ -130,15 +128,18 @@ class DBTableSync(DBTableBase):
     return required_update_table
 
   def sync_table(self):
-    check_hash_table = self.engine.execute(f"select * from {self.schema}.{self.table}").fetchone()
-    row_list = self.get_csv_version(os.path.join(os.getcwd(), "files"))
-    if not check_hash_table:
-      # Insert rows into hash table if there is no data
-      super().init_hash_table(row_list)
+    with open(os.path.join(os.getcwd(), "sql", "select_tds_version.sql"), "r") as fd:
+      select_sql = fd.read().format(schema_name=self.schema, tds_version_table=self.table)
+      check_tds_table = self.engine.execute(select_sql).fetchone()
+
+    row_list = self.get_tds_version(os.path.join(os.getcwd(), "files"))
+    if not check_tds_table:
+      # Insert rows into tds_version table if there is no data
+      super().init_tds_version(row_list)
       # TODO: .td로 맵핑한 DDL 스크립트 실행
     else:
       # Compare & update table
-      self.compare_csv_version(row_list)
+      self.compare_tds_version(row_list)
       # TODO: .td로 맵핑한 DDL 스크립트 실행 - update인 경우 drop 후 create
 
 if __name__ == "__main__":
