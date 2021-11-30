@@ -1,3 +1,3 @@
-INSERT INTO {schema_name}.{tds_version_table} VALUES (
-  '{file_name}', '{table_name}', '{csv_hash}'
+INSERT INTO {schema_name}.{table_name} VALUES (
+  '{tds_file_name}', '{tds_table_name}', '{tds_csv_hash}'
 );
