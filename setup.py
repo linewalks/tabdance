@@ -10,10 +10,10 @@ setup(
     python_requires=">= 3.8",
     packages=find_packages(),
     install_requires=[
-        "configparser==5.0.2",
-        "paramiko==2.8.0",
-        "pandas==1.3.4",
-        "SQLAlchemy==1.3.23"
+        "configparser",
+        "paramiko",
+        "pandas",
+        "SQLAlchemy"
     ],
     zip_safe=False,
     entry_points={
