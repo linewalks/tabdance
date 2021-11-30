@@ -9,7 +9,7 @@ from pathlib import Path
 from sqlalchemy import create_engine
 from sqlalchemy.engine.reflection import Inspector
 
-from base import get_config
+from main.base import get_config
 
 
 def calculate_md5(csv_path: str) -> hex:
