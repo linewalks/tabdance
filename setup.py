@@ -13,12 +13,15 @@ setup(
         "configparser",
         "paramiko",
         "pandas",
+        "psycopg2-binary",
         "SQLAlchemy"
     ],
     zip_safe=False,
     entry_points={
         "console_scripts": [
-            "tds = main.updownload:main"
+            "tds = main.run:main"
         ]
-    }
+    },
+    package_data={"main": ["sql/*.sql","sql/**/*.sql"]},
+    include_package_data=True
 )
