@@ -2,11 +2,7 @@ import json
 import os
 import paramiko
 
-from main.base import (
-    get_args,
-    get_config,
-    callback_progressbar
-)
+from main.base import callback_progressbar
 
 
 class UpDownLoader:
@@ -133,20 +129,3 @@ class UpDownLoader:
 
     except Exception as e:
       raise Exception(f"Upload Fail: {e}")
-
-
-def main():
-  """main"""
-  args = get_args()
-  config = get_config()
-
-  updownloader = UpDownLoader(args, config)
-  updownloader.connect_sftp()
-
-  if args.load_type == "upload":
-    updownloader.upload()
-
-  elif args.load_type == "download":
-    updownloader.download()
-
-  updownloader.disconnect_sftp()

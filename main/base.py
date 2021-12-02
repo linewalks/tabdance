@@ -18,14 +18,18 @@ def get_config():
 def get_args():
   """스크립트 옵션 값 가져오는 함수"""
   parser = argparse.ArgumentParser(description="Table Data Sync Script",
-                                   usage="tds load_type [-h] [-f FILE [FILE ...]] [-a]")
-  parser.add_argument("load_type", help="Choose 'upload' or 'download'")
+                                   usage="tds mode [-h] [-f FILE [FILE ...]] [-a]")
+  parser.add_argument("mode", help="Choose 'upload' or 'download' or 'update'")
 
-  group = parser.add_mutually_exclusive_group(required=True)
+  group = parser.add_mutually_exclusive_group()
   group.add_argument("-f", "--file", nargs="+", help="Write file name you want to download or upload")
   group.add_argument("-a", "--all", action="store_true", help="All file download or upload")
 
   args = parser.parse_args()
+  if args.mode == "update":
+    if args.file is not None or args.all is True:
+      parser.error("update mode can't have options'")
+
   return args
 
 
