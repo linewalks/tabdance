@@ -1,6 +1,6 @@
-from .base import get_args, get_config
-from .update import DBTableBase, DBTableSync
-from .updownload import UpDownLoader
+from main.base import get_args, get_config
+from main.update import DBTableBase, DBTableSync
+from main.updownload import UpDownLoader
 
 
 def main():
