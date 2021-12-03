@@ -120,8 +120,6 @@ class DBTableSync(DBTableBase):
     return self.engine.execute(sql_string).fetchone()
 
   def compare_tds_version(self, row_list: list):
-    # tds_version 테이블에 값이 없는 경우: required_update_table, required_update_csv에 값 입력
-    # tds_version 테이블에 값이 있는 경우: compare_tds_version.sql 실행 후 리턴되는 table, csv 입력
     required_update_table = []  # Table list that needs synchronization
     required_update_csv = []   # Csv file list that needs to update a tds_version table
 
