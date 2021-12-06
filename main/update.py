@@ -28,9 +28,12 @@ class DBTableBase:
     self.table = config["DB"]["TABLE"]
     self.engine = create_engine(self.uri)
     self.sql_base_path = (
-        Path(__file__).resolve().parent).joinpath("sql", "base")
+        Path(__file__).resolve().parent
+    ).joinpath(
+        "sql", "base"
+    )
 
-  def load_sql(self, sql_path: str, **kwargs):
+  def load_crud_sql(self, sql_path: str, **kwargs) -> None:
     with open(sql_path, "r") as fd:
       start_time = time.time()
       print(f"\n===========Start loading Sql script '{sql_path}'===========")
@@ -47,7 +50,7 @@ class DBTableBase:
       print(f"Time for loading sql script: {end_time-start_time:.2f}secs")
       print(f"\n===========Finished loading Sql script '{sql_path}'===========")
 
-  def check_db_object(self, db_object: str, object_name: str):
+  def check_db_object(self, db_object: str, object_name: str) -> str:
     inspector = Inspector.from_engine(self.engine)
     if db_object == "schema":
       db_object_list = inspector.get_schema_names()
@@ -57,20 +60,18 @@ class DBTableBase:
     if object_name not in db_object_list:
       return object_name
 
-  def init_db_object(self):
+  def init_db_object(self) -> None:
     for required_obj, name in zip(["schema", "table"], [self.schema, self.table]):
       required_obj_name = self.check_db_object(required_obj, name)
       if required_obj_name:
-        self.load_sql(self.sql_base_path.joinpath(
+        self.load_crud_sql(self.sql_base_path.joinpath(
             f"init_{required_obj}.sql"), table_name=required_obj_name)
-      else:
-        pass
 
-  def init_tds_version(self, row_list: list):
+  def init_tds_version(self, row_list: list) -> None:
     print(f"\n===========Inserting data into {self.table}===========")
     for row in row_list:
       with self.engine.connect() as conn:
-        self.load_sql(
+        self.load_crud_sql(
             self.sql_base_path.joinpath("init_tds_version.sql"),
             table_name=self.table,
             tds_file_name=row["file_name"],
@@ -108,7 +109,7 @@ class DBTableSync(DBTableBase):
 
     return hash_row_list
 
-  def get_sql_result(self, sql_path, **kwargs):
+  def get_sql_result(self, sql_path, **kwargs) -> tuple:
     with open(sql_path, "r") as sql:
       sql_string = sql.read().format(
           schema_name=self.schema,
@@ -119,7 +120,7 @@ class DBTableSync(DBTableBase):
       )
     return self.engine.execute(sql_string).fetchone()
 
-  def compare_tds_version(self, row_list: list):
+  def compare_tds_version(self, row_list: list) -> list:
     required_update_table = []  # Table list that needs synchronization
     required_update_csv = []   # Csv file list that needs to update a tds_version table
 
@@ -139,7 +140,7 @@ class DBTableSync(DBTableBase):
       for csv in required_update_csv:
         for row in row_list:
           if csv == row["file_name"]:
-            self.load_sql(
+            self.load_crud_sql(
                 self.sql_path.joinpath("update_tds_version.sql"),
                 table_name=self.table,
                 tds_file_name=row["file_name"],
@@ -150,16 +151,16 @@ class DBTableSync(DBTableBase):
     # return required update table list
     return list(set(required_update_table))
 
-  def create_target_table(self, table: str):
+  def create_target_table(self, table: str) -> None:
     # create target table from table definition(.td)
     with open(os.path.join(self.file_path, f"{table}.td"), "r") as td:
-      table_def = json.load(td)
+      table_schema = json.load(td)
       column_info = ",".join(
-          [f"{col['name']} {col['type']}" for col in table_def["columns"]])
+          [f"{col['name']} {col['type']}" for col in table_schema["columns"]])
       cast_column = ",".join(
-          [f"CAST({col['name']} AS {col['type']})" for col in table_def["columns"]])
+          [f"CAST({col['name']} AS {col['type']})" for col in table_schema["columns"]])
 
-    self.load_sql(
+    self.load_crud_sql(
         self.sql_path.joinpath("create_table.sql"),
         table_name=table,
         column_info=column_info
@@ -167,13 +168,13 @@ class DBTableSync(DBTableBase):
 
     # Input only the columns specified in .td into target table
     # The column type of the target table must be cast as a column type of .td
-    self.load_sql(
+    self.load_crud_sql(
         os.path.join(self.sql_td_path, "insert_target_from_temp.sql"),
         table_name=table,
         column_info=cast_column
     )
 
-  def create_temp_target_table(self, csv: str, table: str):
+  def create_temp_target_table(self, csv: str, table: str) -> None:
     # Create temp table
     # create a temporary table with column of text type by reading the header of csv
     conn = self.engine.raw_connection()
@@ -190,7 +191,7 @@ class DBTableSync(DBTableBase):
     if self.check_db_object("table", f"temp_{table}"):
       temp_column_info = ",".join(
           [" ".join(i) for i in list(zip(header, ["text"] * len(header)))])
-      self.load_sql(
+      self.load_crud_sql(
           self.sql_path.joinpath("create_table.sql"),
           table_name=f"temp_{table}",
           column_info=temp_column_info
@@ -205,7 +206,7 @@ class DBTableSync(DBTableBase):
       conn.cursor().copy_expert(copy_sql, f)
     conn.commit()
 
-  def insert_target_table(self, table_list: list, tds_version_list: list):
+  def insert_target_table(self, table_list: list, tds_version_list: list) -> None:
     for table in table_list:
       for row in tds_version_list:
         if row["table_name"] == table:
@@ -223,11 +224,11 @@ class DBTableSync(DBTableBase):
     for table in table_list:
       self.drop_table(f"temp_{table}")
 
-  def drop_table(self, table: str):
+  def drop_table(self, table: str) -> None:
     print(f"\n===========Drop Table {table}===========")
-    self.load_sql(os.path.join(self.sql_path, "drop_table.sql"), table_name=table)
+    self.load_crud_sql(os.path.join(self.sql_path, "drop_table.sql"), table_name=table)
 
-  def sync_table(self):
+  def sync_table(self) -> None:
     row_list = self.get_tds_version()
     check_tds_version = self.get_sql_result(
         self.sql_path.joinpath("select_table.sql"),
@@ -235,8 +236,11 @@ class DBTableSync(DBTableBase):
     )
 
     # Initialize target_table to the file name of the .td extension
-    td_list = [td[:-3]
-               for td in os.listdir(self.file_path) if td.endswith(".td")]
+    td_list = [
+        td[:-3]
+        for td in os.listdir(self.file_path)
+        if td.endswith(".td")
+    ]
     table_list = []
     # Check whether the target_table is created or not
     for td_name in td_list:
