@@ -20,7 +20,7 @@ class CommandParser:
         help_comment = f"Download data from REMOTE_REPO_PATH to LOCAL_REPO_PATH"
 
       load_parser = self.subparsers.add_parser(load_type, help=help_comment)
-      options_group = load_parser.add_mutually_exclusive_group()
+      options_group = load_parser.add_mutually_exclusive_group(required=True)
       options_group.add_argument("-f", "--file", nargs="+", help=f"Write file name you want to {load_type}")
       options_group.add_argument("-a", "--all", action="store_true", help=f"All file {load_type}")
 
