@@ -247,6 +247,12 @@ class DBTableSync(DBTableBase):
       required_obj_name = self.check_db_object("table", td_name)
       if required_obj_name:
         table_list.append(required_obj_name)
+      # Check if the target_table is empty
+      if not self.get_sql_result(
+          self.sql_path.joinpath("select_table.sql"),
+          table_name=td_name
+      ):
+        table_list.append(td_name)
     table_list = list(set(table_list))
 
     if not check_tds_version:
