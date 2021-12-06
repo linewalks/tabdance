@@ -10,8 +10,7 @@ def main():
 
   if args.mode == "update":
     DBTableBase(config).init_db_object()
-    # TODO: LOCAL_REPO_PATH 관련해서 논의 후 주석 해제
-    # DBTableSync(config).sync_table()
+    DBTableSync(config).sync_table()
 
   else:
     updownloader = UpDownLoader(args, config)
