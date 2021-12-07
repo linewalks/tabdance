@@ -10,8 +10,6 @@ from pathlib import Path
 from sqlalchemy import create_engine
 from sqlalchemy.engine.reflection import Inspector
 
-from main.base import get_config
-
 
 def calculate_md5(csv_path: str) -> hex:
   with open(csv_path, "rb") as f:
@@ -36,7 +34,7 @@ class DBTableBase:
   def load_crud_sql(self, sql_path: str, **kwargs) -> None:
     with open(sql_path, "r") as fd:
       start_time = time.time()
-      print(f"Start loading Sql script '{sql_path}'")
+      print(f"Start loading Sql script '{sql_path.name}'")
       sql = fd.read().format(
           schema_name=self.schema,
           table_name=kwargs.get("table_name"),
@@ -48,7 +46,7 @@ class DBTableBase:
       self.engine.execute(sql)
       end_time = time.time()
       print(f"Time for loading sql script: {end_time-start_time:.2f}secs")
-      print(f"Finished loading Sql script '{sql_path}'")
+      print(f"Finished loading Sql script '{sql_path.name}'")
 
   def check_db_object(self, db_object: str, object_name: str) -> str:
     inspector = Inspector.from_engine(self.engine)
@@ -173,7 +171,7 @@ class DBTableSync(DBTableBase):
     # Input only the columns specified in .td into target table
     # The column type of the target table must be cast as a column type of .td
     self.load_crud_sql(
-        os.path.join(self.sql_td_path, "insert_target_from_temp.sql"),
+        self.sql_td_path.joinpath("insert_target_from_temp.sql"),
         table_name=table,
         column_info=cast_column
     )
@@ -227,7 +225,7 @@ class DBTableSync(DBTableBase):
 
   def drop_table(self, table: str) -> None:
     print(f"### Drop Table {table}")
-    self.load_crud_sql(os.path.join(self.sql_path, "drop_table.sql"), table_name=table)
+    self.load_crud_sql(self.sql_path.joinpath("drop_table.sql"), table_name=table)
 
   def sync_table(self) -> None:
     row_list = self.get_tds_version()
