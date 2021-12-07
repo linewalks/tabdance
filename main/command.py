@@ -10,7 +10,7 @@ class CommandParser:
     self.add_updownload_command()
     self.add_update_command()
     self.add_config_command()
-    return type(self.parser.parse_args())
+    return self.parser.parse_args()
 
   def add_updownload_command(self) -> None:
     for load_type in ["upload", "download"]:
