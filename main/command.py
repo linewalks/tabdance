@@ -3,7 +3,7 @@ import argparse
 
 class CommandParser:
   def __init__(self) -> None:
-    self.parser = argparse.ArgumentParser(prog="TDS")
+    self.parser = argparse.ArgumentParser(prog="tds")
     self.subparsers = self.parser.add_subparsers(dest="command", help="Table Data Sync Operation")
 
   def get_args(self) -> argparse.Namespace:
@@ -29,4 +29,8 @@ class CommandParser:
     self.subparsers.add_parser("update", help="update help")
 
   def add_config_command(self) -> None:
-    self.subparsers.add_parser("config", help="config help")
+    config_parser = self.subparsers.add_parser("config", help="TDS config file create, read, update")
+    options_group = config_parser.add_mutually_exclusive_group(required=True)
+    options_group.add_argument("--create", action="store_true", help="Create '~/.tds/tds.cfg' file")
+    options_group.add_argument("--list", action="store_true", help="Show TDS config information")
+    options_group.add_argument("--update", nargs=2, help="Setting TDS config file, ex) Section.Option Information")
