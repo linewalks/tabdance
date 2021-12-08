@@ -22,6 +22,6 @@ setup(
             "tds = main.run:main"
         ]
     },
-    package_data={"main": ["sql/*.sql","sql/**/*.sql"]},
+    package_data={"main": ["tds.default.cfg", "sql/*.sql", "sql/**/*.sql"]},
     include_package_data=True
 )

@@ -1,17 +1,5 @@
 import math
-import os
 import sys
-
-from configparser import ConfigParser
-
-
-def get_config() -> ConfigParser:
-  """config 설정값 가져오기"""
-  config = ConfigParser()
-  #TODO: 현재 개발까지는 CLUE-Uploader/ 위치에서만 tds 명령어 실행해야함.
-  config_path = os.path.join(os.getcwd(), "main", "tds.cfg")
-  config.read(config_path)
-  return config
 
 
 def convert_size(file_size) -> str:
