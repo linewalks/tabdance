@@ -134,6 +134,14 @@ class DBTableSync(DBTableBase):
       if result:
         required_update_table.append(result[0])
         required_update_csv.append(result[1])
+      elif not self.check_db_object(
+          "table", row["table_name"]
+      ) and not self.get_sql_result(
+          self.sql_path.joinpath("select_table.sql"),
+          table_name=row["table_name"]
+      ):
+        # The target_table is empty and csv file has no changes
+        required_update_table.append(row["table_name"])
 
     # update to tds_version table
     if required_update_csv:
@@ -242,12 +250,6 @@ class DBTableSync(DBTableBase):
       required_obj_name = self.check_db_object("table", td_name)
       if required_obj_name:
         create_table_list.append(required_obj_name)
-      # Check if the target_table is empty
-      elif not self.get_sql_result(
-          self.sql_path.joinpath("select_table.sql"),
-          table_name=td_name
-      ):
-        create_table_list.append(td_name)
     create_table_list = list(set(create_table_list))
 
     print("=============tds_version=============")
