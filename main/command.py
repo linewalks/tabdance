@@ -24,9 +24,8 @@ class CommandParser:
       options_group.add_argument("-f", "--file", nargs="+", help=f"Write file name you want to {load_type}")
       options_group.add_argument("-a", "--all", action="store_true", help=f"All file {load_type}")
 
-  # TODO: help comment 작성
   def add_update_command(self) -> None:
-    self.subparsers.add_parser("update", help="update help")
+    self.subparsers.add_parser("update", help="Compare and update the DB table with csv of LOCAL_REPO_PATH")
 
   def add_config_command(self) -> None:
     config_parser = self.subparsers.add_parser("config", help="TDS config file create, read, update")
