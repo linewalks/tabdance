@@ -7,7 +7,7 @@ setup(
     description="Table Data Sync",
     author="Linewalks",
     author_email="insu@linewalks.com",
-    url="https://github.com/linewalks/tds"
+    url="https://github.com/linewalks/tds",
     python_requires=">= 3.8",
     packages=find_packages(),
     install_requires=[
