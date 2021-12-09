@@ -8,7 +8,7 @@ class Uploader(UpDownLoaderBase):
   def __init__(self, args, config) -> None:
     super().__init__(args, config)
 
-  def upload(self):
+  def upload(self) -> None:
     files = []
     files_in_remote_repo_path = os.listdir(self.local_repo_path)
     if self.args.file is not None:
@@ -21,7 +21,7 @@ class Uploader(UpDownLoaderBase):
     files.extend(td_files)
     self.start_upload_files(files)
 
-  def extract_td_files_from_files(self, files):
+  def extract_td_files_from_files(self, files) -> list:
     td_files = []
     for file in files:
       if file.endswith(".meta"):
@@ -40,7 +40,7 @@ class Uploader(UpDownLoaderBase):
       td_file = json.load(meta_file)["table_name"] + ".td"
     return td_file
 
-  def start_upload_files(self, files):
+  def start_upload_files(self, files) -> None:
     try:
       for file in files:
         local_path = os.path.join(self.local_repo_path, file)
