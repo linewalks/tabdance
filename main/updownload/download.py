@@ -14,8 +14,7 @@ class Downloader(UpDownLoaderBase):
       files = self.get_csv_meta_files_when_option_is_file(files_in_remote_repo_path, self.args.file)
     elif self.args.all:
       files = self.get_csv_meta_files_when_option_is_all(files_in_remote_repo_path)
-
-    self.assert_error_if_empty_files(files)
+    assert files != [], "No files to download"
 
     td_files = self.extract_td_files_from_files(files)
     files.extend(td_files)
