@@ -1,7 +1,7 @@
 import json
 import paramiko
 
-from main.base import callback_progressbar
+from tds.base import callback_progressbar
 
 
 class SSHConnector:

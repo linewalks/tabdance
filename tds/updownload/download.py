@@ -1,6 +1,6 @@
 import os
 
-from main.updownload.base import UpDownLoaderBase
+from tds.updownload.base import UpDownLoaderBase
 
 
 class Downloader(UpDownLoaderBase):

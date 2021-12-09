@@ -19,9 +19,9 @@ setup(
     zip_safe=False,
     entry_points={
         "console_scripts": [
-            "tds = main.run:main"
+            "tds = tds.run:main"
         ]
     },
-    package_data={"main": ["tds.default.cfg", "sql/*.sql", "sql/**/*.sql"]},
+    package_data={"tds": ["tds.default.cfg", "sql/*.sql", "sql/**/*.sql"]},
     include_package_data=True
 )
