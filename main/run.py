@@ -1,15 +1,18 @@
 from main.command import CommandParser
 from main.config import TDSConfig
 from main.update import DBTableBase, DBTableSync
-from main.updownload import UpDownLoader
+from main.updownload.download import Downloader
+from main.updownload.upload import Uploader
 
 
 def main():
   args = CommandParser().get_args()
   if args.command == "config":
     run_tds_config(args)
-  elif args.command == "upload" or args.command == "download":
-    run_tds_updownload(args)
+  elif args.command == "download":
+    run_tds_download(args)
+  elif args.command == "upload":
+    run_tds_upload(args)
   elif args.command == "update":
     run_tds_update()
 
@@ -27,18 +30,26 @@ def run_tds_config(args):
     tds_config.set_config(section, option, value)
 
 
-def run_tds_updownload(args):
+def run_tds_download(args):
   tds_config = TDSConfig()
   tds_config.assert_error_if_not_exists_config_info_for_updownload()
   config = tds_config.get_config()
 
-  updownloader = UpDownLoader(args, config)
-  updownloader.connect_sftp()
-  if args.command == "upload":
-    updownloader.upload()
-  else:
-    updownloader.download()
-  updownloader.disconnect_sftp()
+  downloader = Downloader(args, config)
+  downloader.ssh_connector.connect_sftp()
+  downloader.download()
+  downloader.ssh_connector.disconnect_sftp()
+
+
+def run_tds_upload(args):
+  tds_config = TDSConfig()
+  tds_config.assert_error_if_not_exists_config_info_for_updownload()
+  config = tds_config.get_config()
+
+  uploader = Uploader(args, config)
+  uploader.ssh_connector.connect_sftp()
+  uploader.upload()
+  uploader.ssh_connector.disconnect_sftp()
 
 
 def run_tds_update():
