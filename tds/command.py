@@ -3,7 +3,7 @@ import argparse
 
 class CommandParser:
   def __init__(self) -> None:
-    self.parser = argparse.ArgumentParser(prog="tds")
+    self.parser = argparse.ArgumentParser(prog="tabdanc")
     self.subparsers = self.parser.add_subparsers(dest="command", help="Table Data Sync Operation")
 
   def get_args(self) -> argparse.Namespace:

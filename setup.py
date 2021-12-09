@@ -2,12 +2,12 @@ from setuptools import setup, find_packages
 
 
 setup(
-    name="tds",
+    name="tabdanc",
     version="0.0.1",
     description="Table Data Sync",
     author="Linewalks",
     author_email="insu@linewalks.com",
-    url="https://github.com/linewalks/tds",
+    url="https://github.com/linewalks/tabdanc",
     python_requires=">= 3.8",
     packages=find_packages(),
     install_requires=[
@@ -20,9 +20,9 @@ setup(
     zip_safe=False,
     entry_points={
         "console_scripts": [
-            "tds = tds.run:main"
+            "tabdanc = tds.run:main"
         ]
     },
-    package_data={"tds": ["tds.default.cfg", "sql/*.sql", "sql/**/*.sql"]},
+    package_data={"tabdanc": ["tds.default.cfg", "sql/*.sql", "sql/**/*.sql"]},
     include_package_data=True
 )
