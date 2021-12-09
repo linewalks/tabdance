@@ -1,4 +1,4 @@
-from main.updownload.ssh import SSHConnector
+from tds.updownload.ssh import SSHConnector
 
 
 class UpDownLoaderBase:
