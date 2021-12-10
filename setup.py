@@ -5,6 +5,8 @@ setup(
     name="tabdanc",
     version="0.0.1",
     description="Table Data Sync",
+    long_description=open("README.md").read(),
+    long_description_content_type="text/markdown",
     author="Linewalks",
     author_email="insu@linewalks.com",
     url="https://github.com/linewalks/tabdanc",
