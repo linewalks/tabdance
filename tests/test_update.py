@@ -1,4 +1,4 @@
-from tabdanc.base import get_config
+from tabdanc.config import TableDataSyncConfig
 from tabdanc.update import DBTableBase, DBTableSync
 
 import pytest
@@ -6,7 +6,9 @@ import pytest
 
 @pytest.fixture
 def config():
-  return get_config()
+  tabdanc_config = TableDataSyncConfig()
+  tabdanc_config.assert_error_if_not_exists_config_info_for_updownload()
+  return tabdanc_config.get_config()
 
 
 def test_init_db(config):
