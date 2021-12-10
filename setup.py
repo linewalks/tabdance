@@ -20,9 +20,9 @@ setup(
     zip_safe=False,
     entry_points={
         "console_scripts": [
-            "tabdanc = tds.run:main"
+            "tabdanc = tabdanc.run:main"
         ]
     },
-    package_data={"tabdanc": ["tds.default.cfg", "sql/*.sql", "sql/**/*.sql"]},
+    package_data={"tabdanc": ["tabdanc.default.cfg", "sql/*.sql", "sql/**/*.sql"]},
     include_package_data=True
 )

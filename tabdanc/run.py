@@ -1,8 +1,8 @@
-from tds.command import CommandParser
-from tds.config import TDSConfig
-from tds.update import DBTableBase, DBTableSync
-from tds.updownload.download import Downloader
-from tds.updownload.upload import Uploader
+from tabdanc.command import CommandParser
+from tabdanc.config import TDSConfig
+from tabdanc.update import DBTableBase, DBTableSync
+from tabdanc.updownload.download import Downloader
+from tabdanc.updownload.upload import Uploader
 
 
 def main():

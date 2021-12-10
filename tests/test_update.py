@@ -1,5 +1,5 @@
-from tds.base import get_config
-from tds.update import DBTableBase, DBTableSync
+from tabdanc.base import get_config
+from tabdanc.update import DBTableBase, DBTableSync
 
 import pytest
 
