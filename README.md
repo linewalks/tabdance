@@ -1,6 +1,17 @@
 # TABDANC (Table Data Sync)
 
-Tabdanc is a library that maintain and manage latest data needed within CLUE
+Tabdanc is a library that maintain and manage latest data.
+
+Main Feature compares the .csv data stored in the database with the .csv file in local repository and if they are different, update the table with the latest data. (In this case, the latest data is the data in local repository)
+
+Local repository must exist files, .csv, .meta, .td. <br>
+(If any of the three files is not exist, it will not be updated)
+
+- .csv: .csv file is the data file you want to maintain and manage.
+- .meta: .meta file is a json file in which the table name where the csv should be saved is written.
+- .td: .td file is a json file in which table schema definitions(column name, coulmn type) are written. 
+
+Additional Feature is that data files can be uploaded and downloaded by ssh connection between local repository and remote repository.
 
 ## Getting Started
 
@@ -41,6 +52,19 @@ $ tabdanc config --list
 $ tabdanc config --update {section.option} {value}
 ```
 
+### Table Update
+
+You can use the update command to add the csv file to your database. <br>
+If the csv file stored in the database is changed, the changed csv file is updated to the database using the update command.
+
+```sh
+# help
+$ tabdanc update -h
+
+# update table
+$ tabdanc update
+```
+
 ### File Upload / Download
 
 > When upload or download through the '-f' option, enter only the file name without the extension. <br> When enter upload or download command, files related to the file name are upload or download. ex) .csv .meta .td
@@ -79,19 +103,6 @@ $ tabdanc download -f file_name
 
 # download multiple files
 $ tabdanc download -f file_name1 file_name2
-```
-
-### Table Update
-
-You can use the update command to add the csv file to your DBMS. <br>
-If the csv file stored in the DBMS is changed, the changed csv file is updated to the DBMS using the update command.
-
-```sh
-# help
-$ tabdanc update -h
-
-# update table
-$ tabdanc update
 ```
 
 ## Contact
