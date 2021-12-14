@@ -46,27 +46,27 @@ class TableDataSyncConfig:
     else:
       print("rm: tabdanc.cfg: No such file")
 
-  def decorator_raise_exception_if_not_exists_config_file(func):
+  def check_config(func):
     def decorate(*args, **kwargs):
       self = args[0]
       assert os.path.exists(self.config_file_path), "Not exists config file, First create and set a config file"
-      func(*args, **kwargs)
+      return func(*args, **kwargs)
     return decorate
 
-  @decorator_raise_exception_if_not_exists_config_file
+  @check_config
   def get_config(self) -> ConfigParser:
     config = ConfigParser()
     config.read(self.config_file_path)
     return config
 
-  @decorator_raise_exception_if_not_exists_config_file
+  @check_config
   def print_config(self) -> None:
     config = self.get_config()
     for section in config.sections():
       for option in config.options(section):
         print(f"{section}.{option}={config[section][option]}")
 
-  @decorator_raise_exception_if_not_exists_config_file
+  @check_config
   def set_config(self, section, option, value) -> None:
     config = self.get_config()
     config.set(section.upper(), option.lower(), value)
