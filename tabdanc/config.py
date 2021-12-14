@@ -4,23 +4,23 @@ from configparser import ConfigParser
 from pathlib import Path
 
 
-class TDSConfig:
+class TableDataSyncConfig:
   def __init__(self) -> None:
-    self.tds_directory_path = os.path.join(os.path.expanduser("~"), ".tds/")
-    self.config_file_path = os.path.join(self.tds_directory_path, "tds.cfg")
+    self.tabdanc_directory_path = os.path.join(os.path.expanduser("~"), ".tabdanc/")
+    self.config_file_path = os.path.join(self.tabdanc_directory_path, "tabdanc.cfg")
 
   def create_config_file(self) -> None:
-    self.create_tds_directory_if_not_exists()
+    self.create_tabdanc_directory_if_not_exists()
     if self.is_exists_config_file():
-      print("Already created tds.cfg file")
+      print("Already created tabdanc.cfg file")
     else:
       config = self.read_default_config_for_inital_setup()
       with open(self.config_file_path, "w") as config_file:
         config.write(config_file)
 
-  def create_tds_directory_if_not_exists(self) -> None:
-    if not os.path.exists(self.tds_directory_path):
-      os.mkdir(self.tds_directory_path)
+  def create_tabdanc_directory_if_not_exists(self) -> None:
+    if not os.path.exists(self.tabdanc_directory_path):
+      os.mkdir(self.tabdanc_directory_path)
 
   def is_exists_config_file(self) -> bool:
     if os.path.exists(self.config_file_path):
@@ -28,23 +28,23 @@ class TDSConfig:
     return False
 
   def read_default_config_for_inital_setup(self) -> ConfigParser:
-    default_config_path = Path(__file__).resolve().parent.joinpath("tds.default.cfg")
+    default_config_path = Path(__file__).resolve().parent.joinpath("tabdanc.default.cfg")
     default_config = ConfigParser()
     default_config.read(default_config_path)
     return default_config
 
-  def delete_tds_directory_if_exists_and_empty(self) -> None:
-    if os.path.exists(self.tds_directory_path):
-      if len(os.listdir(self.tds_directory_path)) == 0:
-        os.rmdir(self.tds_directory_path)
+  def delete_tabdanc_directory_if_exists_and_empty(self) -> None:
+    if os.path.exists(self.tabdanc_directory_path):
+      if len(os.listdir(self.tabdanc_directory_path)) == 0:
+        os.rmdir(self.tabdanc_directory_path)
       else:
-        print("rmdir: .tds: Directory not empty")
+        print("rmdir: .tabdanc: Directory not empty")
 
   def delete_config_file_if_exists(self) -> None:
     if os.path.exists(self.config_file_path):
       os.remove(self.config_file_path)
     else:
-      print("rm: tds.cfg: No such file")
+      print("rm: tabdanc.cfg: No such file")
 
   def get_config(self) -> ConfigParser:
     self.assert_error_if_not_exists_config_file()

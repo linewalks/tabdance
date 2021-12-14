@@ -1,7 +1,7 @@
 import json
 import paramiko
 
-from tds.base import callback_progressbar
+from tabdanc.base import callback_progressbar
 
 
 class SSHConnector:
@@ -11,6 +11,7 @@ class SSHConnector:
     self.sftp = None
 
   def connect_sftp(self) -> None:
+    # TODO: 연결되지 않았을 때 오류 메시지 출력 ex) VPN 연결되지 않음.
     self.ssh_client = paramiko.SSHClient()
     self.ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     self.ssh_client.connect(

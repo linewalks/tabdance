@@ -1,7 +1,7 @@
 import json
 import os
 
-from tds.updownload.base import UpDownLoaderBase
+from tabdanc.updownload.base import UpDownLoaderBase
 
 
 class Uploader(UpDownLoaderBase):
