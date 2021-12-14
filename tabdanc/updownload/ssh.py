@@ -21,28 +21,33 @@ class SSHConnector:
     )
     self.sftp = self.ssh_client.open_sftp()
 
+  def decorator_raise_exception_if_sftp_is_none(func):
+    def decorate(*args, **kwargs):
+      self = args[0]
+      if self.sftp is None:
+        raise Exception("SSH is not connect, sftp is none")
+      func(*args, **kwargs)
+    return decorate
+
+  @decorator_raise_exception_if_sftp_is_none
   def disconnect_sftp(self) -> None:
-    self.assert_error_if_sftp_is_none()
     self.sftp.close()
     self.ssh_client.close()
 
+  @decorator_raise_exception_if_sftp_is_none
   def get_files(self, remote_path, local_path) -> None:
-    self.assert_error_if_sftp_is_none()
     self.sftp.get(remote_path, local_path, callback=callback_progressbar)
 
+  @decorator_raise_exception_if_sftp_is_none
   def put_files(self, local_path, remote_path) -> None:
-    self.assert_error_if_sftp_is_none()
     self.sftp.put(local_path, remote_path, callback=callback_progressbar)
 
+  @decorator_raise_exception_if_sftp_is_none
   def get_listdir(self, path) -> list:
-    self.assert_error_if_sftp_is_none()
     return self.sftp.listdir(path)
 
+  @decorator_raise_exception_if_sftp_is_none
   def read_meta_file_and_return_td_file(self, meta_file_path) -> str:
-    self.assert_error_if_sftp_is_none()
     with self.sftp.open(meta_file_path, "r") as meta_file:
       td_file = json.load(meta_file)["table_name"] + ".td"
     return td_file
-
-  def assert_error_if_sftp_is_none(self) -> AssertionError:
-    assert self.sftp is not None, "SSH is not connect, sftp is none"
