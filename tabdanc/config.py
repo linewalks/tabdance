@@ -46,28 +46,32 @@ class TableDataSyncConfig:
     else:
       print("rm: tabdanc.cfg: No such file")
 
+  def check_config(func):
+    def decorate(*args, **kwargs):
+      self = args[0]
+      assert os.path.exists(self.config_file_path), "Not exists config file, First create and set a config file"
+      return func(*args, **kwargs)
+    return decorate
+
+  @check_config
   def get_config(self) -> ConfigParser:
-    self.assert_error_if_not_exists_config_file()
     config = ConfigParser()
     config.read(self.config_file_path)
     return config
 
+  @check_config
   def print_config(self) -> None:
-    self.assert_error_if_not_exists_config_file()
     config = self.get_config()
     for section in config.sections():
       for option in config.options(section):
         print(f"{section}.{option}={config[section][option]}")
 
+  @check_config
   def set_config(self, section, option, value) -> None:
-    self.assert_error_if_not_exists_config_file()
     config = self.get_config()
     config.set(section.upper(), option.lower(), value)
     with open(self.config_file_path, "w") as config_file:
       config.write(config_file)
-
-  def assert_error_if_not_exists_config_file(self) -> AssertionError:
-    assert os.path.exists(self.config_file_path), "Not exists config file, First create and set a config file"
 
   def assert_error_if_not_exists_config_info_for_updownload(self) -> AssertionError:
     config = self.get_config()
@@ -78,8 +82,8 @@ class TableDataSyncConfig:
     assert config.get("REMOTE_INFO", "remote_user_password") != "", "remote_info.remote_user_password is empty"
 
   def assert_error_if_not_exists_config_info_for_update(self) -> AssertionError:
-    self.assert_error_if_not_exists_config_info_for_updownload()
     config = self.get_config()
+    assert config.get("PATH", "local_repo_path") != "", "path.local_repo_path is empty"
     assert config.get("DB", "sqlalchemy_database_uri") != "", "db.sqlalchemy_database_uri is empty"
     assert config.get("DB", "schema") != "", "db.schema is empty"
     assert config.get("DB", "table") != "", "db.table is empty"

@@ -42,6 +42,7 @@ class Downloader(UpDownLoaderBase):
         print(file)
         self.ssh_connector.get_files(remote_path, local_path)
         print()
+      print(f"Download Path: {self.local_repo_path}")
       print(f"Successfully Download: {files}")
 
     except Exception as e:
