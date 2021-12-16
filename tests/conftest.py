@@ -13,7 +13,7 @@ def delete_config_file_and_directory(test_config):
       os.rmdir(test_config.tabdanc_directory_path)
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def test_config():
   test_config = TableDataSyncConfig()
   test_config.tabdanc_directory_path = os.path.join(os.path.expanduser("~"), ".test_tabdanc/")
@@ -24,7 +24,7 @@ def test_config():
   delete_config_file_and_directory(test_config)
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def test_ssh_config(test_config):
   test_config.create_config_file()
   test_ssh_config = test_config.get_config()
