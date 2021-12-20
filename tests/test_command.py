@@ -21,7 +21,7 @@ class TestUpDownLoad:
     args = command_parser.parser.parse_args([command_type, option, *file_names])
     assert args.command == command_type
     assert args.all is False
-    assert type(args.file) is list and len(args.file) > 0
+    assert isinstance(args.file, list) and len(args.file) > 0
 
   @pytest.mark.parametrize(
       "command_type, option",
@@ -90,4 +90,4 @@ class TestConfig:
     assert args.command == command_type
     assert args.create is False
     assert args.list is False
-    assert type(args.update) is list and len(args.update) == 2
+    assert isinstance(args.update, list) and len(args.update) == 2
