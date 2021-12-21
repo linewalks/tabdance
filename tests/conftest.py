@@ -41,6 +41,6 @@ def test_ssh_config(test_config):
       and test_ssh_config.get("REMOTE_INFO", "remote_host_name") != ""
       and test_ssh_config.get("REMOTE_INFO", "remote_user_name") != ""
       and test_ssh_config.get("REMOTE_INFO", "remote_user_password") != ""
-  ), "Before execute test_ssh.py, input test_config info"
+  ), "Before execute test file, input test_config info in 'conftest.py'"
 
   return test_ssh_config
