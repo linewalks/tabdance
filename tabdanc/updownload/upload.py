@@ -10,11 +10,11 @@ class Uploader(UpDownLoaderBase):
 
   def upload(self) -> None:
     files = []
-    files_in_remote_repo_path = os.listdir(self.local_repo_path)
+    files_in_local_repo_path = os.listdir(self.local_repo_path)
     if self.args.file is not None:
-      files = self.get_csv_meta_files_when_option_is_file(files_in_remote_repo_path, self.args.file)
+      files = self.get_csv_meta_files_when_option_is_file(files_in_local_repo_path, self.args.file)
     elif self.args.all:
-      files = self.get_csv_meta_files_when_option_is_all(files_in_remote_repo_path)
+      files = self.get_csv_meta_files_when_option_is_all(files_in_local_repo_path)
     assert files != [], "No files to upload"
 
     td_files = self.extract_td_files_from_files(files)
