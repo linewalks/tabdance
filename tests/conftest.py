@@ -6,6 +6,7 @@ import pytest
 from abc import ABCMeta, abstractmethod
 
 from tabdanc.config import TableDataSyncConfig
+from tabdanc.updownload.ssh import SSHConnector
 
 
 def delete_config_file_and_directory(test_config):
@@ -133,3 +134,50 @@ class UploadTestFile(TestFileBase):
         os.remove(file_path)
       elif file.endswith(".td"):
         os.remove(file_path)
+
+
+class DownloadTestFile(TestFileBase):
+  def __init__(self, config):
+    self.remote_repo_path = config.get("PATH", "remote_repo_path")
+    self.ssh_connector = SSHConnector(config)
+
+  def connect_sftp(self):
+    self.ssh_connector.connect_sftp()
+
+  def disconnect_sftp(self):
+    self.ssh_connector.disconnect_sftp()
+
+  def create_csv_files(self, count):
+    for i in range(count):
+      csv_file = self.remote_repo_path + "/" + f"tabdanc_test{i}.csv"
+      with self.ssh_connector.sftp.open(csv_file, "w") as file:
+        writer = csv.writer(file)
+        writer.writerow(["col1", "col2", "col3"])
+
+  def create_meta_files(self, count):
+    for i in range(count):
+      meta_file = self.remote_repo_path + "/" + f"tabdanc_test{i}.meta"
+      data = {
+          "table_name": f"tabdanc_test_table{i}"
+      }
+      with self.ssh_connector.sftp.open(meta_file, "w") as file:
+        json.dump(data, file)
+
+  def create_td_files(self, count):
+    for i in range(count):
+      td_file = self.remote_repo_path + "/" + f"tabdanc_test_table{i}.td"
+      data = {
+          "columns": [
+              {"name": "seq", "type": "int4"},
+              {"name": "code", "type": "varchar"}
+          ]
+      }
+      with self.ssh_connector.sftp.open(td_file, "w") as file:
+        json.dump(data, file)
+
+  def remove_test_files(self):
+    test_files = self.ssh_connector.sftp.listdir(self.remote_repo_path)
+    for file in test_files:
+      if "tabdanc_test" in file:
+        file_path = self.remote_repo_path + "/" + file
+        self.ssh_connector.sftp.remove(file_path)
