@@ -29,24 +29,31 @@ def delete_config_file_and_directory(test_config):
       raise Exception(f"Directory not empty: '{test_config.tabdanc_directory_path}'")
 
 
+def pytest_addoption(parser):
+  parser.addini("test_config_remote_repo_path", "PATH.REMOTE_REPO_PATH for Test")
+  parser.addini("test_config_remote_host_name", "REMOTE_INFO.REMOTE_HOST_NAME for Test")
+  parser.addini("test_config_remote_user_name", "REMOTE_INFO.REMOTE_USER_NAME for Test")
+  parser.addini("test_config_remote_user_password", "REMOTE_INFO.REMOTE_USER_PASSWORD for Test")
+
+
 @pytest.fixture(scope="session")
-def test_ssh_config(test_config):
+def test_ssh_config(request, test_config):
   test_config.create_config_file()
   test_ssh_config = test_config.get_config()
 
   test_ssh_config.set("PATH", "local_repo_path", test_config.tabdanc_directory_path)
-  # NOTE: ssh 테스트 실행 전에 "" 부분 값 넣어주기
-  test_ssh_config.set("PATH", "remote_repo_path", "")
-  test_ssh_config.set("REMOTE_INFO", "remote_host_name", "")
-  test_ssh_config.set("REMOTE_INFO", "remote_user_name", "")
-  test_ssh_config.set("REMOTE_INFO", "remote_user_password", "")
+  # NOTE: 테스트 실행 전에 pytest.ini 파일 확인
+  test_ssh_config.set("PATH", "remote_repo_path", request.config.getini("test_config_remote_repo_path"))
+  test_ssh_config.set("REMOTE_INFO", "remote_host_name", request.config.getini("test_config_remote_host_name"))
+  test_ssh_config.set("REMOTE_INFO", "remote_user_name", request.config.getini("test_config_remote_user_name"))
+  test_ssh_config.set("REMOTE_INFO", "remote_user_password", request.config.getini("test_config_remote_user_password"))
 
   assert (
       test_ssh_config.get("PATH", "remote_repo_path") != ""
       and test_ssh_config.get("REMOTE_INFO", "remote_host_name") != ""
       and test_ssh_config.get("REMOTE_INFO", "remote_user_name") != ""
       and test_ssh_config.get("REMOTE_INFO", "remote_user_password") != ""
-  ), "Before execute test file, input test_config info in 'conftest.py'"
+  ), "Before execute test file, Set 'pytest.ini' file"
 
   return test_ssh_config
 
