@@ -53,7 +53,7 @@ def test_ssh_config(request, test_config):
       and test_ssh_config.get("REMOTE_INFO", "remote_host_name") != ""
       and test_ssh_config.get("REMOTE_INFO", "remote_user_name") != ""
       and test_ssh_config.get("REMOTE_INFO", "remote_user_password") != ""
-  ), "Before execute test file, Set 'pytest.ini' file"
+  ), "Before execute test file, Create and Set 'pytest.ini' file"
 
   return test_ssh_config
 
