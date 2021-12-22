@@ -90,5 +90,5 @@ class TestFileUpDownLoad:
       assert test_data["file_name"] in os.listdir(test_data["local_repo_path"])
     finally:
       if test_data["file_name"] in ssh_connector.sftp.listdir(test_data["remote_repo_path"]):
-        ssh_connector.ssh_client.exec_command(f"rm -r {test_data['remote_path']}")
+        ssh_connector.sftp.remove(test_data['remote_path'])
       ssh_connector.disconnect_sftp()
