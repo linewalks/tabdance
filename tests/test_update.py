@@ -11,15 +11,15 @@ from tabdanc.update import DBTableBase, DBTableSync
 
 class TestInitDB:
   @pytest.fixture(scope="class")
-  def setup_init_db(self, test_update_config):
-    test_file = UploadTestFile(test_update_config)
+  def setup_init_db(self, test_tabdanc_config):
+    test_file = UploadTestFile(test_tabdanc_config)
     test_file.setup_csv_meta_td_files()
     yield
     test_file.remove_test_files()
-    drop_schema(test_update_config)
+    drop_schema(test_tabdanc_config)
 
-  def test_init_db(self, setup_init_db, test_update_config):
-    table_base = DBTableBase(test_update_config)
+  def test_init_db(self, setup_init_db, test_tabdanc_config):
+    table_base = DBTableBase(test_tabdanc_config)
     table_base.init_db_object()
     assert table_base.check_db_object("schema", table_base.schema) is None
     assert table_base.check_db_object("table", table_base.table) is None
@@ -27,19 +27,19 @@ class TestInitDB:
 
 class TestTableSync:
   @pytest.fixture(scope="class")
-  def setup_table_sync(self, test_update_config):
-    test_file = UploadTestFile(test_update_config)
+  def setup_table_sync(self, test_tabdanc_config):
+    test_file = UploadTestFile(test_tabdanc_config)
     test_file.setup_csv_meta_td_files()
 
-    table_base = DBTableBase(test_update_config)
+    table_base = DBTableBase(test_tabdanc_config)
     table_base.init_db_object()
     yield test_file
 
     test_file.remove_test_files()
-    drop_schema(test_update_config)
+    drop_schema(test_tabdanc_config)
 
-  def test_table_sync(self, setup_table_sync, test_update_config):
-    table_sync = DBTableSync(test_update_config)
+  def test_table_sync(self, setup_table_sync, test_tabdanc_config):
+    table_sync = DBTableSync(test_tabdanc_config)
     table_sync.sync_table()
 
     csv_files = [csv_file for csv_file in os.listdir(setup_table_sync.local_repo_path) if csv_file.endswith(".csv")]
@@ -47,8 +47,8 @@ class TestTableSync:
     for csv_file in csv_files:
       assert csv_file in stored_file_names
 
-  def test_table_sync_after_csv_file_changes(self, setup_table_sync, test_update_config):
-    table_sync = DBTableSync(test_update_config)
+  def test_table_sync_after_csv_file_changes(self, setup_table_sync, test_tabdanc_config):
+    table_sync = DBTableSync(test_tabdanc_config)
     table_sync.sync_table()
     prev_tabdanc_versions = table_sync.get_tds_version()
 

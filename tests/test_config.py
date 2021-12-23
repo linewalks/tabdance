@@ -5,19 +5,19 @@ import pytest
 class TestDecorator:
   error_message = "Not exists config file, First create and set a config file"
 
-  def test_get_config(self, test_config):
+  def test_get_config(self, test_default_config):
     with pytest.raises(AssertionError) as error:
-      test_config.get_config()
+      test_default_config.get_config()
     assert str(error.value) == TestDecorator.error_message
 
-  def test_print_config(self, test_config):
+  def test_print_config(self, test_default_config):
     with pytest.raises(AssertionError) as error:
-      test_config.print_config()
+      test_default_config.print_config()
     assert str(error.value) == TestDecorator.error_message
 
-  def test_set_config(self, test_config):
+  def test_set_config(self, test_default_config):
     with pytest.raises(AssertionError) as error:
-      test_config.set_config()
+      test_default_config.set_config()
     assert str(error.value) == TestDecorator.error_message
 
 
@@ -29,14 +29,14 @@ class TestConfigData:
   ]
 
   @pytest.mark.parametrize("section, options", sections_options)
-  def test_read_default_config(self, test_config, section, options):
-    default_config = test_config.read_default_config_for_inital_setup()
+  def test_read_default_config(self, test_default_config, section, options):
+    default_config = test_default_config.read_default_config_for_inital_setup()
     self.check_section_and_options(default_config, section, options)
 
   @pytest.mark.parametrize("section, options", sections_options)
-  def test_get_config(self, test_config, section, options):
-    test_config.create_config_file()
-    config = test_config.get_config()
+  def test_get_config(self, test_default_config, section, options):
+    test_default_config.create_config_file()
+    config = test_default_config.get_config()
     self.check_section_and_options(config, section, options)
 
   def check_section_and_options(self, config, section, options):
@@ -45,11 +45,11 @@ class TestConfigData:
       assert config.has_option(section, option), f"Not exists option: {option}"
 
 
-def test_create_config_file(test_config):
-  test_config.create_config_file()
-  assert os.path.exists(test_config.config_file_path)
+def test_create_config_file(test_default_config):
+  test_default_config.create_config_file()
+  assert os.path.exists(test_default_config.config_file_path)
 
 
-def test_print_config(test_config):
-  test_config.create_config_file()
-  test_config.print_config()
+def test_print_config(test_default_config):
+  test_default_config.create_config_file()
+  test_default_config.print_config()

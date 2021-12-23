@@ -7,8 +7,8 @@ from tabdanc.updownload.download import Downloader
 
 
 @pytest.fixture
-def test_file(test_ssh_config):
-  test_file = DownloadTestFile(test_ssh_config)
+def test_file(test_tabdanc_config):
+  test_file = DownloadTestFile(test_tabdanc_config)
   test_file.connect_sftp()
   yield test_file
   test_file.remove_test_files()
@@ -23,35 +23,35 @@ def test_file(test_ssh_config):
         argparse.Namespace(command="download", all=True, file=None)
     ]
 )
-def test_exist_all_files(test_file, args, test_ssh_config):
+def test_exist_all_files(test_file, args, test_tabdanc_config):
   test_file.setup_csv_meta_td_files()
-  start_download(args, test_ssh_config)
+  start_download(args, test_tabdanc_config)
 
 
 @pytest.mark.parametrize("args", [argparse.Namespace(command="download", all=False, file=["tabdanc_test0"])])
-def test_not_exist_td(test_file, args, test_ssh_config):
+def test_not_exist_td(test_file, args, test_tabdanc_config):
   test_file.setup_csv_meta_files()
 
   with pytest.raises(Exception) as error:
-    start_download(args, test_ssh_config)
-  assert f"No such file in {test_ssh_config.get('PATH','remote_repo_path')}" in str(error.value)
+    start_download(args, test_tabdanc_config)
+  assert f"No such file in {test_tabdanc_config.get('PATH','remote_repo_path')}" in str(error.value)
 
 
 @pytest.mark.parametrize("args", [argparse.Namespace(command="download", all=False, file=["tabdanc_test0"])])
-def test_not_exist_meta(test_file, args, test_ssh_config):
+def test_not_exist_meta(test_file, args, test_tabdanc_config):
   test_file.setup_csv_td_files()
 
   with pytest.raises(Exception) as error:
-    start_download(args, test_ssh_config)
+    start_download(args, test_tabdanc_config)
   assert f"No such file:" in str(error.value)
 
 
 @pytest.mark.parametrize("args", [argparse.Namespace(command="download", all=False, file=["tabdanc_test0"])])
-def test_not_exist_csv(test_file, args, test_ssh_config):
+def test_not_exist_csv(test_file, args, test_tabdanc_config):
   test_file.setup_meta_td_files()
 
   with pytest.raises(Exception) as error:
-    start_download(args, test_ssh_config)
+    start_download(args, test_tabdanc_config)
   assert f"No such file:" in str(error.value)
 
 
