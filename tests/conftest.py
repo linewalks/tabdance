@@ -11,11 +11,11 @@ from tabdanc.updownload.ssh import SSHConnector
 
 @pytest.fixture(scope="session")
 def test_default_config():
-  test_default_config = TableDataSyncConfig()
-  test_default_config.tabdanc_directory_path = os.path.join(os.path.expanduser("~"), ".test_tabdanc/")
-  test_default_config.config_file_path = os.path.join(test_default_config.tabdanc_directory_path, "test_tabdanc.cfg")
-  yield test_default_config
-  delete_config_file_and_directory(test_default_config)
+  config = TableDataSyncConfig()
+  config.tabdanc_directory_path = os.path.join(os.path.expanduser("~"), ".test_tabdanc/")
+  config.config_file_path = os.path.join(config.tabdanc_directory_path, "test_tabdanc.cfg")
+  yield config
+  delete_config_file_and_directory(config)
 
 
 def delete_config_file_and_directory(config):
@@ -42,30 +42,30 @@ def pytest_addoption(parser):
 @pytest.fixture(scope="session")
 def test_tabdanc_config(request, test_default_config):
   test_default_config.create_config_file()
-  test_tabdanc_config = test_default_config.get_config()
+  config = test_default_config.get_config()
 
-  test_tabdanc_config.set("PATH", "local_repo_path", test_default_config.tabdanc_directory_path)
+  config.set("PATH", "local_repo_path", test_default_config.tabdanc_directory_path)
   # NOTE: 테스트 실행 전에 pytest.ini 파일 확인
-  test_tabdanc_config.set("PATH", "remote_repo_path", request.config.getini("test_config_remote_repo_path"))
-  test_tabdanc_config.set("REMOTE_INFO", "remote_host_name", request.config.getini("test_config_remote_host_name"))
-  test_tabdanc_config.set("REMOTE_INFO", "remote_user_name", request.config.getini("test_config_remote_user_name"))
-  test_tabdanc_config.set("REMOTE_INFO", "remote_user_password",
+  config.set("PATH", "remote_repo_path", request.config.getini("test_config_remote_repo_path"))
+  config.set("REMOTE_INFO", "remote_host_name", request.config.getini("test_config_remote_host_name"))
+  config.set("REMOTE_INFO", "remote_user_name", request.config.getini("test_config_remote_user_name"))
+  config.set("REMOTE_INFO", "remote_user_password",
                           request.config.getini("test_config_remote_user_password"))
-  test_tabdanc_config.set("DB", "sqlalchemy_database_uri", request.config.getini("test_config_sqlalchemy_database_uri"))
-  test_tabdanc_config.set("DB", "schema", request.config.getini("test_config_schema"))
-  test_tabdanc_config.set("DB", "table", request.config.getini("test_config_table"))
+  config.set("DB", "sqlalchemy_database_uri", request.config.getini("test_config_sqlalchemy_database_uri"))
+  config.set("DB", "schema", request.config.getini("test_config_schema"))
+  config.set("DB", "table", request.config.getini("test_config_table"))
 
   assert (
-      test_tabdanc_config.get("PATH", "remote_repo_path") != ""
-      and test_tabdanc_config.get("REMOTE_INFO", "remote_host_name") != ""
-      and test_tabdanc_config.get("REMOTE_INFO", "remote_user_name") != ""
-      and test_tabdanc_config.get("REMOTE_INFO", "remote_user_password") != ""
-      and test_tabdanc_config.get("DB", "sqlalchemy_database_uri") != ""
-      and test_tabdanc_config.get("DB", "schema") != ""
-      and test_tabdanc_config.get("DB", "table") != ""
+      config.get("PATH", "remote_repo_path") != ""
+      and config.get("REMOTE_INFO", "remote_host_name") != ""
+      and config.get("REMOTE_INFO", "remote_user_name") != ""
+      and config.get("REMOTE_INFO", "remote_user_password") != ""
+      and config.get("DB", "sqlalchemy_database_uri") != ""
+      and config.get("DB", "schema") != ""
+      and config.get("DB", "table") != ""
   ), "Before execute test file, Create and Set 'pytest.ini' file"
 
-  return test_tabdanc_config
+  return config
 
 
 class BaseTestFile(metaclass=ABCMeta):

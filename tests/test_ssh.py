@@ -6,8 +6,7 @@ from tabdanc.updownload.ssh import SSHConnector
 
 @pytest.fixture(scope="class")
 def ssh_connector(test_tabdanc_config):
-  ssh_connector = SSHConnector(test_tabdanc_config)
-  return ssh_connector
+  return SSHConnector(test_tabdanc_config)
 
 
 class TestDecorator:
