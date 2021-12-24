@@ -5,9 +5,8 @@ from tabdanc.updownload.ssh import SSHConnector
 
 
 @pytest.fixture(scope="class")
-def ssh_connector(test_ssh_config):
-  ssh_connector = SSHConnector(test_ssh_config)
-  return ssh_connector
+def ssh_connector(test_tabdanc_config):
+  return SSHConnector(test_tabdanc_config)
 
 
 class TestDecorator:
@@ -55,9 +54,9 @@ class TestConnection:
 
 class TestFileUpDownLoad:
   @pytest.fixture(scope="class")
-  def test_data(self, test_ssh_config):
-    local_repo_path = test_ssh_config.get("PATH", "local_repo_path")
-    remote_repo_path = test_ssh_config.get("PATH", "remote_repo_path")
+  def test_data(self, test_tabdanc_config):
+    local_repo_path = test_tabdanc_config.get("PATH", "local_repo_path")
+    remote_repo_path = test_tabdanc_config.get("PATH", "remote_repo_path")
 
     file_name = "test_tabdanc.cfg"
     local_path = os.path.join(local_repo_path, file_name)

@@ -33,19 +33,6 @@ class TableDataSyncConfig:
     default_config.read(default_config_path)
     return default_config
 
-  def delete_tabdanc_directory_if_exists_and_empty(self) -> None:
-    if os.path.exists(self.tabdanc_directory_path):
-      if len(os.listdir(self.tabdanc_directory_path)) == 0:
-        os.rmdir(self.tabdanc_directory_path)
-      else:
-        print("rmdir: .tabdanc: Directory not empty")
-
-  def delete_config_file_if_exists(self) -> None:
-    if os.path.exists(self.config_file_path):
-      os.remove(self.config_file_path)
-    else:
-      print("rm: tabdanc.cfg: No such file")
-
   def check_config(func):
     def decorate(*args, **kwargs):
       self = args[0]

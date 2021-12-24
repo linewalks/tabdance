@@ -10,23 +10,23 @@ from tabdanc.updownload.ssh import SSHConnector
 
 
 @pytest.fixture(scope="session")
-def test_config():
-  test_config = TableDataSyncConfig()
-  test_config.tabdanc_directory_path = os.path.join(os.path.expanduser("~"), ".test_tabdanc/")
-  test_config.config_file_path = os.path.join(test_config.tabdanc_directory_path, "test_tabdanc.cfg")
-  yield test_config
-  delete_config_file_and_directory(test_config)
+def test_default_config():
+  config = TableDataSyncConfig()
+  config.tabdanc_directory_path = os.path.join(os.path.expanduser("~"), ".test_tabdanc/")
+  config.config_file_path = os.path.join(config.tabdanc_directory_path, "test_tabdanc.cfg")
+  yield config
+  delete_config_file_and_directory(config)
 
 
-def delete_config_file_and_directory(test_config):
-  if os.path.exists(test_config.config_file_path):
-    os.remove(test_config.config_file_path)
+def delete_config_file_and_directory(config):
+  if os.path.exists(config.config_file_path):
+    os.remove(config.config_file_path)
 
-  if os.path.exists(test_config.tabdanc_directory_path):
-    if len(os.listdir(test_config.tabdanc_directory_path)) == 0:
-      os.rmdir(test_config.tabdanc_directory_path)
+  if os.path.exists(config.tabdanc_directory_path):
+    if len(os.listdir(config.tabdanc_directory_path)) == 0:
+      os.rmdir(config.tabdanc_directory_path)
     else:
-      raise Exception(f"Directory not empty: '{test_config.tabdanc_directory_path}'")
+      raise Exception(f"Directory not empty: '{config.tabdanc_directory_path}'")
 
 
 def pytest_addoption(parser):
@@ -34,28 +34,38 @@ def pytest_addoption(parser):
   parser.addini("test_config_remote_host_name", "REMOTE_INFO.REMOTE_HOST_NAME for Test")
   parser.addini("test_config_remote_user_name", "REMOTE_INFO.REMOTE_USER_NAME for Test")
   parser.addini("test_config_remote_user_password", "REMOTE_INFO.REMOTE_USER_PASSWORD for Test")
+  parser.addini("test_config_sqlalchemy_database_uri", "DB.SQLALCHEMY_DATABASE_URI for Test")
+  parser.addini("test_config_schema", "DB.SCHEMA for Test")
+  parser.addini("test_config_table", "DB.TABLE for Test")
 
 
 @pytest.fixture(scope="session")
-def test_ssh_config(request, test_config):
-  test_config.create_config_file()
-  test_ssh_config = test_config.get_config()
+def test_tabdanc_config(request, test_default_config):
+  test_default_config.create_config_file()
+  config = test_default_config.get_config()
 
-  test_ssh_config.set("PATH", "local_repo_path", test_config.tabdanc_directory_path)
+  config.set("PATH", "local_repo_path", test_default_config.tabdanc_directory_path)
   # NOTE: 테스트 실행 전에 pytest.ini 파일 확인
-  test_ssh_config.set("PATH", "remote_repo_path", request.config.getini("test_config_remote_repo_path"))
-  test_ssh_config.set("REMOTE_INFO", "remote_host_name", request.config.getini("test_config_remote_host_name"))
-  test_ssh_config.set("REMOTE_INFO", "remote_user_name", request.config.getini("test_config_remote_user_name"))
-  test_ssh_config.set("REMOTE_INFO", "remote_user_password", request.config.getini("test_config_remote_user_password"))
+  config.set("PATH", "remote_repo_path", request.config.getini("test_config_remote_repo_path"))
+  config.set("REMOTE_INFO", "remote_host_name", request.config.getini("test_config_remote_host_name"))
+  config.set("REMOTE_INFO", "remote_user_name", request.config.getini("test_config_remote_user_name"))
+  config.set("REMOTE_INFO", "remote_user_password",
+                          request.config.getini("test_config_remote_user_password"))
+  config.set("DB", "sqlalchemy_database_uri", request.config.getini("test_config_sqlalchemy_database_uri"))
+  config.set("DB", "schema", request.config.getini("test_config_schema"))
+  config.set("DB", "table", request.config.getini("test_config_table"))
 
   assert (
-      test_ssh_config.get("PATH", "remote_repo_path") != ""
-      and test_ssh_config.get("REMOTE_INFO", "remote_host_name") != ""
-      and test_ssh_config.get("REMOTE_INFO", "remote_user_name") != ""
-      and test_ssh_config.get("REMOTE_INFO", "remote_user_password") != ""
+      config.get("PATH", "remote_repo_path") != ""
+      and config.get("REMOTE_INFO", "remote_host_name") != ""
+      and config.get("REMOTE_INFO", "remote_user_name") != ""
+      and config.get("REMOTE_INFO", "remote_user_password") != ""
+      and config.get("DB", "sqlalchemy_database_uri") != ""
+      and config.get("DB", "schema") != ""
+      and config.get("DB", "table") != ""
   ), "Before execute test file, Create and Set 'pytest.ini' file"
 
-  return test_ssh_config
+  return config
 
 
 class BaseTestFile(metaclass=ABCMeta):
@@ -63,9 +73,9 @@ class BaseTestFile(metaclass=ABCMeta):
     self.csv_data = ["col1", "col2", "col3"]
     self.td_data = {
         "columns": [
-            {"name": "col1", "type": "int4"},
+            {"name": "col1", "type": "text"},
             {"name": "col2", "type": "text"},
-            {"name": "col3", "type": "varchar(255)"}
+            {"name": "col3", "type": "text"}
         ]
     }
 
