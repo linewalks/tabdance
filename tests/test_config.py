@@ -53,3 +53,15 @@ def test_create_config_file(test_default_config):
 def test_print_config(test_default_config):
   test_default_config.create_config_file()
   test_default_config.print_config()
+
+
+class TestAssertError:
+  def test_updownload(self, test_default_config):
+    test_default_config.create_config_file()
+    with pytest.raises(AssertionError):
+      test_default_config.assert_error_if_not_exists_config_info_for_updownload()
+  
+  def test_update(self, test_default_config):
+    test_default_config.create_config_file()
+    with pytest.raises(AssertionError):
+      test_default_config.assert_error_if_not_exists_config_info_for_update()
