@@ -10,19 +10,15 @@ from tabdanc.update import DBTableBase, DBTableSync
 
 
 class TestInitDB:
-  @pytest.fixture(scope="class")
-  def setup_init_db(self, test_tabdanc_config):
-    test_file = UploadTestFile(test_tabdanc_config)
-    test_file.setup_csv_meta_td_files()
-    yield
-    test_file.remove_test_files()
-    drop_schema(test_tabdanc_config)
+  def test_init_db(self, test_tabdanc_config):
+    try:
+      table_base = DBTableBase(test_tabdanc_config)
+      table_base.init_db_object()
+      assert table_base.check_db_object("schema", table_base.schema) is None
+      assert table_base.check_db_object("table", table_base.table) is None
 
-  def test_init_db(self, setup_init_db, test_tabdanc_config):
-    table_base = DBTableBase(test_tabdanc_config)
-    table_base.init_db_object()
-    assert table_base.check_db_object("schema", table_base.schema) is None
-    assert table_base.check_db_object("table", table_base.table) is None
+    finally:
+      drop_schema(test_tabdanc_config)
 
 
 class TestTableSync:
