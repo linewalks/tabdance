@@ -161,14 +161,31 @@ class DBTableSync(DBTableBase):
     # return required update table list
     return list(set(required_update_table))
 
-  def create_target_table(self, table: str) -> None:
+  def create_target_table(self, table: str, tds_version_list: list) -> None:
     # create target table from table definition(.td)
     with open(os.path.join(self.file_path, f"{table}.td"), "r") as td:
       table_schema = json.load(td)
       column_info = ",".join(
           [f"{col['name']} {col['type']}" for col in table_schema["columns"]])
-      cast_column = ",".join(
-          [f"CAST({col['name']} AS {col['type']})" for col in table_schema["columns"]])
+
+      for row in tds_version_list:
+        if row["table_name"] == table:
+          file_name = os.path.splitext(row['file_name'])[0]
+          meta = f"{file_name}.meta"
+          with open(os.path.join(self.file_path, meta), "r") as metafile:
+            meta_datas = json.load(metafile)
+
+          if "column_match" in meta_datas.keys():
+            cast_column = ",".join(
+                [
+                    f"CAST({meta_datas['column_match'][col['name']]} AS {col['type']}) AS {col['name']}"
+                    for col in table_schema["columns"]
+                ]
+            )
+          else:
+            cast_column = ",".join(
+                [f"CAST({col['name']} AS {col['type']})" for col in table_schema["columns"]]
+            )
 
     self.load_crud_sql(
         self.sql_path.joinpath("create_table.sql"),
@@ -226,7 +243,7 @@ class DBTableSync(DBTableBase):
           self.create_temp_target_table(row["file_name"], row["table_name"])
           print(f"### End of inserting data into temp_{table}\n")
       print(f"### Inserting data into {table}")
-      self.create_target_table(table)
+      self.create_target_table(table, tds_version_list)
       print(f"### End of inserting data into {table}\n")
       self.drop_table(f"temp_{table}")
       print(f"==================================\n")

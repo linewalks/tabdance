@@ -50,7 +50,7 @@ def test_tabdanc_config(request, test_default_config):
   config.set("REMOTE_INFO", "remote_host_name", request.config.getini("test_config_remote_host_name"))
   config.set("REMOTE_INFO", "remote_user_name", request.config.getini("test_config_remote_user_name"))
   config.set("REMOTE_INFO", "remote_user_password",
-                          request.config.getini("test_config_remote_user_password"))
+             request.config.getini("test_config_remote_user_password"))
   config.set("DB", "sqlalchemy_database_uri", request.config.getini("test_config_sqlalchemy_database_uri"))
   config.set("DB", "schema", request.config.getini("test_config_schema"))
   config.set("DB", "table", request.config.getini("test_config_table"))
@@ -70,13 +70,18 @@ def test_tabdanc_config(request, test_default_config):
 
 class BaseTestFile(metaclass=ABCMeta):
   def __init__(self):
-    self.csv_data = ["col1", "col2", "col3"]
+    self.csv_data = ["header1", "header2", "header3"]
     self.td_data = {
         "columns": [
             {"name": "col1", "type": "text"},
             {"name": "col2", "type": "text"},
             {"name": "col3", "type": "text"}
         ]
+    }
+    self.column_match = {
+        "col1": "header1",
+        "col2": "header2",
+        "col3": "header3"
     }
 
   def setup_csv_meta_td_files(self):
@@ -133,7 +138,8 @@ class UploadTestFile(BaseTestFile):
     for i in range(count):
       meta_file = os.path.join(self.local_repo_path, f"tabdanc_test{i}.meta")
       meta_data = {
-          "table_name": f"tabdanc_test_table{i}"
+          "table_name": f"tabdanc_test_table{i}",
+          "column_match": self.column_match
       }
       with open(meta_file, "w") as file:
         json.dump(meta_data, file)

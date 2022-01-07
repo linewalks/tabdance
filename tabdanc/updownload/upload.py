@@ -1,6 +1,8 @@
 import json
 import os
 
+from csv import reader
+
 from tabdanc.updownload.base import UpDownLoaderBase
 
 
@@ -19,6 +21,8 @@ class Uploader(UpDownLoaderBase):
 
     td_files = self.extract_td_files_from_files(files)
     files.extend(td_files)
+
+    self.check_column_match_in_meta_file(files)
     self.start_upload_files(files)
 
   def extract_td_files_from_files(self, files) -> list:
@@ -39,6 +43,35 @@ class Uploader(UpDownLoaderBase):
     with open(meta_file_path, "r") as meta_file:
       td_file = json.load(meta_file)["table_name"] + ".td"
     return td_file
+
+  def check_column_match_in_meta_file(self, files) -> Exception or None:
+    try:
+      meta_files = [file for file in files if file.endswith(".meta")]
+      for meta_file in meta_files:
+        with open(os.path.join(self.local_repo_path, meta_file), "r") as f_meta:
+          meta_datas = json.load(f_meta)
+          if "column_match" not in meta_datas.keys():
+            continue
+          else:
+            self.check_exist_csv_header(meta_file, meta_datas)
+            self.check_exist_td_column(meta_datas)
+
+    except AssertionError as e:
+      raise Exception(e)
+
+  def check_exist_td_column(self, meta_datas):
+    td_file = f"{meta_datas['table_name']}.td"
+    with open(os.path.join(self.local_repo_path, td_file), "r") as f_td:
+      table_schema = json.load(f_td)
+      columns = [column["name"] for column in table_schema["columns"]]
+    assert set(columns) == set(meta_datas["column_match"].keys())
+
+  def check_exist_csv_header(self, meta_file, meta_datas):
+    csv_file = f"{os.path.splitext(meta_file)[0]}.csv"
+    with open(os.path.join(self.local_repo_path, csv_file), "r") as f_csv:
+      csv_reader = reader(f_csv)
+      headers = next(csv_reader)
+    assert set(headers) == set(meta_datas["column_match"].values())
 
   def start_upload_files(self, files) -> None:
     try:

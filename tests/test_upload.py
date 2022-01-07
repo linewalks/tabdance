@@ -64,3 +64,11 @@ def start_upload(args, config):
       if "tabdanc_test" in file:
         ssh_connector.sftp.remove(remote_repo_path + "/" + file)  # OS 에 따라 파일경로 문자 수정
     ssh_connector.disconnect_sftp()
+
+
+@pytest.mark.parametrize("args", [argparse.Namespace(command="upload", all=True, file=None)])
+def test_check_column_match(upload_test_file, args, test_tabdanc_config):
+  upload_test_file.setup_csv_meta_td_files()
+  files = ["tabdanc_test0.meta", "tabdanc_test1.meta", "tabdanc_test2.meta"]
+  uploader = Uploader(args, test_tabdanc_config)
+  uploader.check_column_match_in_meta_file(files)
