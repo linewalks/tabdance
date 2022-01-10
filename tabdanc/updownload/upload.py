@@ -44,7 +44,7 @@ class Uploader(UpDownLoaderBase):
       td_file = json.load(meta_file)["table_name"] + ".td"
     return td_file
 
-  def check_column_match_in_meta_file(self, files) -> Exception or None:
+  def check_column_match_in_meta_file(self, files) -> None:
     try:
       meta_files = [file for file in files if file.endswith(".meta")]
       for meta_file in meta_files:
@@ -57,7 +57,7 @@ class Uploader(UpDownLoaderBase):
     except AssertionError as e:
       raise Exception(e)
 
-  def check_exist_td_column(self, meta_datas) -> AssertionError or None:
+  def check_exist_td_column(self, meta_datas) -> None:
     td_file = f"{meta_datas['table_name']}.td"
     with open(os.path.join(self.local_repo_path, td_file), "r") as f_td:
       table_schema = json.load(f_td)
@@ -66,7 +66,7 @@ class Uploader(UpDownLoaderBase):
     for key in meta_datas["column_match"].keys():
       assert key in columns, f"Not exists '{key}' in .td file"
 
-  def check_exist_csv_header(self, meta_file, meta_datas) -> AssertionError or None:
+  def check_exist_csv_header(self, meta_file, meta_datas) -> None:
     csv_file = f"{os.path.splitext(meta_file)[0]}.csv"
     with open(os.path.join(self.local_repo_path, csv_file), "r") as f_csv:
       csv_reader = reader(f_csv)

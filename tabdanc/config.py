@@ -60,7 +60,7 @@ class TableDataSyncConfig:
     with open(self.config_file_path, "w") as config_file:
       config.write(config_file)
 
-  def assert_error_if_not_exists_config_info_for_updownload(self) -> AssertionError:
+  def assert_error_if_not_exists_config_info_for_updownload(self) -> None:
     config = self.get_config()
     assert config.get("PATH", "local_repo_path") != "", "path.local_repo_path is empty"
     assert config.get("PATH", "remote_repo_path") != "", "path.remote_repo_path is empty"
@@ -68,7 +68,7 @@ class TableDataSyncConfig:
     assert config.get("REMOTE_INFO", "remote_user_name") != "", "remote_info.remote_user_name is empty"
     assert config.get("REMOTE_INFO", "remote_user_password") != "", "remote_info.remote_user_password is empty"
 
-  def assert_error_if_not_exists_config_info_for_update(self) -> AssertionError:
+  def assert_error_if_not_exists_config_info_for_update(self) -> None:
     config = self.get_config()
     assert config.get("PATH", "local_repo_path") != "", "path.local_repo_path is empty"
     assert config.get("DB", "sqlalchemy_database_uri") != "", "db.sqlalchemy_database_uri is empty"
