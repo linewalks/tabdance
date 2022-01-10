@@ -189,18 +189,23 @@ class DBTableSync(DBTableBase):
     # create a temporary table with column of text type by reading the header of csv
     conn = self.engine.raw_connection()
     csv = os.path.join(self.file_path, csv)
-    first_line = 0
     with open(csv, "r") as csvfile:
       csv_reader = reader(csvfile, delimiter=",")
-      for row in csv_reader:
-        while first_line == 0:
-          header = row
-          first_line += 1
+      headers = next(csv_reader)
+
+    # Mapping between csv header and table column, if 'column_match' key exists in .meta
+    meta = os.path.join(self.file_path, f"{os.path.splitext(csv)[0]}.meta")
+    with open(meta, "r") as metafile:
+      meta_datas = json.load(metafile)
+
+    if "column_match" in meta_datas.keys():
+      for i in range(len(headers)):
+        if headers[i] in meta_datas["column_match"].keys():
+          headers[i] = meta_datas["column_match"][headers[i]]
 
     # When table:csv = 1:n, the number of headers of the csv files should be the same.
     if self.check_db_object("table", f"temp_{table}"):
-      temp_column_info = ",".join(
-          [" ".join(i) for i in list(zip(header, ["text"] * len(header)))])
+      temp_column_info = ",".join([f"{header} text" for header in headers])
       self.load_crud_sql(
           self.sql_path.joinpath("create_table.sql"),
           table_name=f"temp_{table}",
