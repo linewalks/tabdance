@@ -50,28 +50,30 @@ class Uploader(UpDownLoaderBase):
       for meta_file in meta_files:
         with open(os.path.join(self.local_repo_path, meta_file), "r") as f_meta:
           meta_datas = json.load(f_meta)
-          if "column_match" not in meta_datas.keys():
-            continue
-          else:
+          if "column_match" in meta_datas.keys():
             self.check_exist_csv_header(meta_file, meta_datas)
             self.check_exist_td_column(meta_datas)
 
     except AssertionError as e:
       raise Exception(e)
 
-  def check_exist_td_column(self, meta_datas):
+  def check_exist_td_column(self, meta_datas) -> AssertionError or None:
     td_file = f"{meta_datas['table_name']}.td"
     with open(os.path.join(self.local_repo_path, td_file), "r") as f_td:
       table_schema = json.load(f_td)
       columns = [column["name"] for column in table_schema["columns"]]
-    assert set(columns) == set(meta_datas["column_match"].keys())
 
-  def check_exist_csv_header(self, meta_file, meta_datas):
+    for key in meta_datas["column_match"].keys():
+      assert key in columns, f"Not exists '{key}' in .td file"
+
+  def check_exist_csv_header(self, meta_file, meta_datas) -> AssertionError or None:
     csv_file = f"{os.path.splitext(meta_file)[0]}.csv"
     with open(os.path.join(self.local_repo_path, csv_file), "r") as f_csv:
       csv_reader = reader(f_csv)
       headers = next(csv_reader)
-    assert set(headers) == set(meta_datas["column_match"].values())
+
+    for value in meta_datas["column_match"].values():
+      assert value in headers, f"Not exists '{value}' in csv file headers"
 
   def start_upload_files(self, files) -> None:
     try:
