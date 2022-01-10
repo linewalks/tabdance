@@ -63,8 +63,8 @@ class Uploader(UpDownLoaderBase):
       table_schema = json.load(f_td)
       columns = [column["name"] for column in table_schema["columns"]]
 
-    for key in meta_datas["column_match"].keys():
-      assert key in columns, f"Not exists '{key}' in .td file"
+    for value in meta_datas["column_match"].values():
+      assert value in columns, f"Not exists '{value}' in .td file"
 
   def check_exist_csv_header(self, meta_file, meta_datas) -> None:
     csv_file = f"{os.path.splitext(meta_file)[0]}.csv"
@@ -72,8 +72,8 @@ class Uploader(UpDownLoaderBase):
       csv_reader = reader(f_csv)
       headers = next(csv_reader)
 
-    for value in meta_datas["column_match"].values():
-      assert value in headers, f"Not exists '{value}' in csv file headers"
+    for key in meta_datas["column_match"].keys():
+      assert key in headers, f"Not exists '{key}' in csv file headers"
 
   def start_upload_files(self, files) -> None:
     try:

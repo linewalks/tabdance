@@ -79,9 +79,9 @@ class BaseTestFile(metaclass=ABCMeta):
         ]
     }
     self.column_match = {
-        "col1": "header1",
-        "col2": "header2",
-        "col3": "header3"
+        "header1": "col1",
+        "header2": "col2",
+        "header3": "col3"
     }
 
   def setup_csv_meta_td_files(self):

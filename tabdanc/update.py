@@ -199,15 +199,13 @@ class DBTableSync(DBTableBase):
       meta_datas = json.load(metafile)
 
     if "column_match" in meta_datas.keys():
-      reversed_column_match = dict(map(reversed, meta_datas["column_match"].items()))
       for i in range(len(headers)):
-        if headers[i] in reversed_column_match.keys():
-          headers[i] = reversed_column_match[headers[i]]
+        if headers[i] in meta_datas["column_match"].keys():
+          headers[i] = meta_datas["column_match"][headers[i]]
 
     # When table:csv = 1:n, the number of headers of the csv files should be the same.
     if self.check_db_object("table", f"temp_{table}"):
-      temp_column_info = ",".join(
-          [" ".join(i) for i in list(zip(headers, ["text"] * len(headers)))])
+      temp_column_info = ",".join([f"{header} text" for header in headers])
       self.load_crud_sql(
           self.sql_path.joinpath("create_table.sql"),
           table_name=f"temp_{table}",
