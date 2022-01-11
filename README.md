@@ -10,14 +10,20 @@ Local repository must exist files, .csv, .meta, .td. <br>
 - `.csv`: .csv file is the data file you want to maintain and manage.
 - `.meta`: .meta file is a json file in which the table name where the csv should be saved is written.
   - .meta file name must be the same as the .csv file name
+  - `column_match` is an optional value.
+  Set `column_match` when csv header and table column are different.
+  - An error occurs if the `csv_header` is not in the .csv file or the `table_column` is not in the .td file.
   ```json
   {
-    "table_name": "table_name"
+    "table_name": "table_name",
+    "column_match": {
+      "csv_header": "table_column",
+      ...
+    }
   }
   ```
 - `.td`: .td file is a json file in which table schema definitions(column name, coulmn type) are written. 
   - .td file name must be the same as the table name
-  - The column name of the .td file must be the same as the header name of the .csv file
   ```json
   {
     "columns": [
