@@ -1,6 +1,6 @@
 import pytest
 
-from tabdanc.command import CommandParser
+from tabdance.command import CommandParser
 
 
 class TestUpDownLoad:

@@ -1,4 +1,4 @@
-from tabdanc.updownload.ssh import SSHConnector
+from tabdance.updownload.ssh import SSHConnector
 
 
 class UpDownLoaderBase:

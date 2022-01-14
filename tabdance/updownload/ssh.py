@@ -1,7 +1,7 @@
 import json
 import paramiko
 
-from tabdanc.base import callback_progressbar
+from tabdance.base import callback_progressbar
 
 
 class SSHConnector:

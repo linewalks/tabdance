@@ -1,6 +1,6 @@
 import os
 
-from tabdanc.updownload.base import UpDownLoaderBase
+from tabdance.updownload.base import UpDownLoaderBase
 
 
 class Downloader(UpDownLoaderBase):
