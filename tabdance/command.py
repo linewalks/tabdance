@@ -3,7 +3,7 @@ import argparse
 
 class CommandParser:
   def __init__(self) -> None:
-    self.parser = argparse.ArgumentParser(prog="tabdanc")
+    self.parser = argparse.ArgumentParser(prog="tabdance")
     self.subparsers = self.parser.add_subparsers(dest="command", help="Table Data Sync Operation")
 
   def get_args(self) -> argparse.Namespace:
@@ -28,8 +28,8 @@ class CommandParser:
     self.subparsers.add_parser("update", help="Compare and update the DB table with csv of LOCAL_REPO_PATH")
 
   def add_config_command(self) -> None:
-    config_parser = self.subparsers.add_parser("config", help="tabdanc config file create, read, update")
+    config_parser = self.subparsers.add_parser("config", help="tabdance config file create, read, update")
     options_group = config_parser.add_mutually_exclusive_group(required=True)
-    options_group.add_argument("--create", action="store_true", help="Create '~/.tabdanc/tabdanc.cfg' file")
-    options_group.add_argument("--list", action="store_true", help="Show tabdanc config information")
-    options_group.add_argument("--update", nargs=2, help="Setting tabdanc config file, ex) Section.Option Information")
+    options_group.add_argument("--create", action="store_true", help="Create '~/.tabdance/tabdance.cfg' file")
+    options_group.add_argument("--list", action="store_true", help="Show tabdance config information")
+    options_group.add_argument("--update", nargs=2, help="Setting tabdance config file, ex) Section.Option Information")

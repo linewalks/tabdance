@@ -3,7 +3,7 @@ import os
 
 from csv import reader
 
-from tabdanc.updownload.base import UpDownLoaderBase
+from tabdance.updownload.base import UpDownLoaderBase
 
 
 class Uploader(UpDownLoaderBase):

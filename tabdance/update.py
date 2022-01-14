@@ -1,7 +1,6 @@
 import hashlib
 import json
 import os
-import pandas as pd
 import time
 
 from configparser import ConfigParser

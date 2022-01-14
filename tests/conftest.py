@@ -5,15 +5,15 @@ import pytest
 
 from abc import ABCMeta, abstractmethod
 
-from tabdanc.config import TableDataSyncConfig
-from tabdanc.updownload.ssh import SSHConnector
+from tabdance.config import TableDataSyncConfig
+from tabdance.updownload.ssh import SSHConnector
 
 
 @pytest.fixture(scope="session")
 def test_default_config():
   config = TableDataSyncConfig()
-  config.tabdanc_directory_path = os.path.join(os.path.expanduser("~"), ".test_tabdanc/")
-  config.config_file_path = os.path.join(config.tabdanc_directory_path, "test_tabdanc.cfg")
+  config.tabdance_directory_path = os.path.join(os.path.expanduser("~"), ".test_tabdance/")
+  config.config_file_path = os.path.join(config.tabdance_directory_path, "test_tabdance.cfg")
   yield config
   delete_config_file_and_directory(config)
 
@@ -22,11 +22,11 @@ def delete_config_file_and_directory(config):
   if os.path.exists(config.config_file_path):
     os.remove(config.config_file_path)
 
-  if os.path.exists(config.tabdanc_directory_path):
-    if len(os.listdir(config.tabdanc_directory_path)) == 0:
-      os.rmdir(config.tabdanc_directory_path)
+  if os.path.exists(config.tabdance_directory_path):
+    if len(os.listdir(config.tabdance_directory_path)) == 0:
+      os.rmdir(config.tabdance_directory_path)
     else:
-      raise Exception(f"Directory not empty: '{config.tabdanc_directory_path}'")
+      raise Exception(f"Directory not empty: '{config.tabdance_directory_path}'")
 
 
 def pytest_addoption(parser):
@@ -40,11 +40,11 @@ def pytest_addoption(parser):
 
 
 @pytest.fixture(scope="session")
-def test_tabdanc_config(request, test_default_config):
+def test_tabdance_config(request, test_default_config):
   test_default_config.create_config_file()
   config = test_default_config.get_config()
 
-  config.set("PATH", "local_repo_path", test_default_config.tabdanc_directory_path)
+  config.set("PATH", "local_repo_path", test_default_config.tabdance_directory_path)
   # NOTE: 테스트 실행 전에 pytest.ini 파일 확인
   config.set("PATH", "remote_repo_path", request.config.getini("test_config_remote_repo_path"))
   config.set("REMOTE_INFO", "remote_host_name", request.config.getini("test_config_remote_host_name"))
@@ -129,16 +129,16 @@ class UploadTestFile(BaseTestFile):
 
   def create_csv_files(self, count):
     for i in range(count):
-      csv_file = os.path.join(self.local_repo_path, f"tabdanc_test{i}.csv")
+      csv_file = os.path.join(self.local_repo_path, f"tabdance_test{i}.csv")
       with open(csv_file, "w") as file:
         writer = csv.writer(file)
         writer.writerow(self.csv_data)
 
   def create_meta_files(self, count):
     for i in range(count):
-      meta_file = os.path.join(self.local_repo_path, f"tabdanc_test{i}.meta")
+      meta_file = os.path.join(self.local_repo_path, f"tabdance_test{i}.meta")
       meta_data = {
-          "table_name": f"tabdanc_test_table{i}",
+          "table_name": f"tabdance_test_table{i}",
           "column_match": self.column_match
       }
       with open(meta_file, "w") as file:
@@ -146,7 +146,7 @@ class UploadTestFile(BaseTestFile):
 
   def create_td_files(self, count):
     for i in range(count):
-      td_file = os.path.join(self.local_repo_path, f"tabdanc_test_table{i}.td")
+      td_file = os.path.join(self.local_repo_path, f"tabdance_test_table{i}.td")
       with open(td_file, "w") as file:
         json.dump(self.td_data, file)
 
@@ -176,29 +176,29 @@ class DownloadTestFile(BaseTestFile):
 
   def create_csv_files(self, count):
     for i in range(count):
-      csv_file = self.remote_repo_path + "/" + f"tabdanc_test{i}.csv"
+      csv_file = self.remote_repo_path + "/" + f"tabdance_test{i}.csv"
       with self.ssh_connector.sftp.open(csv_file, "w") as file:
         writer = csv.writer(file)
         writer.writerow(self.csv_data)
 
   def create_meta_files(self, count):
     for i in range(count):
-      meta_file = self.remote_repo_path + "/" + f"tabdanc_test{i}.meta"
+      meta_file = self.remote_repo_path + "/" + f"tabdance_test{i}.meta"
       meta_data = {
-          "table_name": f"tabdanc_test_table{i}"
+          "table_name": f"tabdance_test_table{i}"
       }
       with self.ssh_connector.sftp.open(meta_file, "w") as file:
         json.dump(meta_data, file)
 
   def create_td_files(self, count):
     for i in range(count):
-      td_file = self.remote_repo_path + "/" + f"tabdanc_test_table{i}.td"
+      td_file = self.remote_repo_path + "/" + f"tabdance_test_table{i}.td"
       with self.ssh_connector.sftp.open(td_file, "w") as file:
         json.dump(self.td_data, file)
 
   def remove_test_files(self):
     test_files = self.ssh_connector.sftp.listdir(self.remote_repo_path)
     for file in test_files:
-      if "tabdanc_test" in file:
+      if "tabdance_test" in file:
         file_path = self.remote_repo_path + "/" + file
         self.ssh_connector.sftp.remove(file_path)

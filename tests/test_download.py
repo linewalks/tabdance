@@ -3,12 +3,12 @@ import os
 import pytest
 
 from tests.conftest import DownloadTestFile
-from tabdanc.updownload.download import Downloader
+from tabdance.updownload.download import Downloader
 
 
 @pytest.fixture
-def download_test_file(test_tabdanc_config):
-  test_file = DownloadTestFile(test_tabdanc_config)
+def download_test_file(test_tabdance_config):
+  test_file = DownloadTestFile(test_tabdance_config)
   test_file.connect_sftp()
   yield test_file
   test_file.remove_test_files()
@@ -18,40 +18,40 @@ def download_test_file(test_tabdanc_config):
 @pytest.mark.parametrize(
     "args",
     [
-        argparse.Namespace(command="download", all=False, file=["tabdanc_test0"]),
-        argparse.Namespace(command="download", all=False, file=["tabdanc_test0", "tabdanc_test1"]),
+        argparse.Namespace(command="download", all=False, file=["tabdance_test0"]),
+        argparse.Namespace(command="download", all=False, file=["tabdance_test0", "tabdance_test1"]),
         argparse.Namespace(command="download", all=True, file=None)
     ]
 )
-def test_exist_all_files(download_test_file, args, test_tabdanc_config):
+def test_exist_all_files(download_test_file, args, test_tabdance_config):
   download_test_file.setup_csv_meta_td_files()
-  start_download(args, test_tabdanc_config)
+  start_download(args, test_tabdance_config)
 
 
-@pytest.mark.parametrize("args", [argparse.Namespace(command="download", all=False, file=["tabdanc_test0"])])
-def test_not_exist_td(download_test_file, args, test_tabdanc_config):
+@pytest.mark.parametrize("args", [argparse.Namespace(command="download", all=False, file=["tabdance_test0"])])
+def test_not_exist_td(download_test_file, args, test_tabdance_config):
   download_test_file.setup_csv_meta_files()
 
   with pytest.raises(Exception) as error:
-    start_download(args, test_tabdanc_config)
-  assert f"No such file in {test_tabdanc_config.get('PATH','remote_repo_path')}" in str(error.value)
+    start_download(args, test_tabdance_config)
+  assert f"No such file in {test_tabdance_config.get('PATH','remote_repo_path')}" in str(error.value)
 
 
-@pytest.mark.parametrize("args", [argparse.Namespace(command="download", all=False, file=["tabdanc_test0"])])
-def test_not_exist_meta(download_test_file, args, test_tabdanc_config):
+@pytest.mark.parametrize("args", [argparse.Namespace(command="download", all=False, file=["tabdance_test0"])])
+def test_not_exist_meta(download_test_file, args, test_tabdance_config):
   download_test_file.setup_csv_td_files()
 
   with pytest.raises(Exception) as error:
-    start_download(args, test_tabdanc_config)
+    start_download(args, test_tabdance_config)
   assert f"No such file:" in str(error.value)
 
 
-@pytest.mark.parametrize("args", [argparse.Namespace(command="download", all=False, file=["tabdanc_test0"])])
-def test_not_exist_csv(download_test_file, args, test_tabdanc_config):
+@pytest.mark.parametrize("args", [argparse.Namespace(command="download", all=False, file=["tabdance_test0"])])
+def test_not_exist_csv(download_test_file, args, test_tabdance_config):
   download_test_file.setup_meta_td_files()
 
   with pytest.raises(Exception) as error:
-    start_download(args, test_tabdanc_config)
+    start_download(args, test_tabdance_config)
   assert f"No such file:" in str(error.value)
 
 

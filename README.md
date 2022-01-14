@@ -1,6 +1,6 @@
-# TABDANC (Table Data Sync)
+# TABDANCE (Table Data Syncer)
 
-Tabdanc is a library that maintain and manage latest data.
+Tabdance is a library that maintain and manage latest data.
 
 Main Feature compares the .csv data stored in the database with the .csv file in local repository and if they are different, update the table with the latest data. (In this case, the latest data is the data in local repository)
 
@@ -53,7 +53,7 @@ Additional Feature is that data files can be uploaded and downloaded by ssh conn
 ### Installation
 
 ```sh
-$ pip install tabdanc
+$ pip install tabdance
 ```
 
 ## Usage
@@ -61,26 +61,26 @@ $ pip install tabdanc
 ### Command Help
 
 ```sh
-# help tabdanc command
-$ tabdanc -h
+# help tabdance command
+$ tabdance -h
 ```
 
 ### Config Settings
 
-First, you need to set config to use tabdanc 
+First, you need to set config to use tabdance 
 
 ```sh
 # help
-$ tabdanc config -h
+$ tabdance config -h
 
 # create config file 
-$ tabdanc config --create
+$ tabdance config --create
 
 # show config information
-$ tabdanc config --list
+$ tabdance config --list
 
 # update config file
-$ tabdanc config --update {section.option} {value}
+$ tabdance config --update {section.option} {value}
 ```
 
 ### Table Update
@@ -90,10 +90,10 @@ If the csv file stored in the database is changed, the changed csv file is updat
 
 ```sh
 # help
-$ tabdanc update -h
+$ tabdance update -h
 
 # update table
-$ tabdanc update
+$ tabdance update
 ```
 
 ### File Upload / Download
@@ -106,16 +106,16 @@ If you use the upload command, you can upload files from the local repository to
 
 ```sh
 # help
-$ tabdanc upload -h
+$ tabdance upload -h
 
 # upload all files
-$ tabdanc upload -a
+$ tabdance upload -a
 
 # upload one file
-$ tabdanc upload -f file_name
+$ tabdance upload -f file_name
 
 # upload multiple files
-$ tabdanc upload -f file_name1 file_name2
+$ tabdance upload -f file_name1 file_name2
 ```
 
 #### Download
@@ -124,16 +124,16 @@ If you use the download command, you can download files from the remote reposito
 
 ```sh
 # help
-$ tabdanc download -h
+$ tabdance download -h
 
 # download all files
-$ tabdanc download -a
+$ tabdance download -a
 
 # download one file
-$ tabdanc download -f file_name
+$ tabdance download -f file_name
 
 # download multiple files
-$ tabdanc download -f file_name1 file_name2
+$ tabdance download -f file_name1 file_name2
 ```
 
 ## Contact
