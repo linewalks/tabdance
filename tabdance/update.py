@@ -242,18 +242,30 @@ class DBTableSync(DBTableBase):
   def sync_table(self) -> None:
     row_list = self.get_tds_version()
 
-    # Initialize target_table to the file name of the .td extension
-    td_list = [
-        td[:-3]
-        for td in os.listdir(self.file_path)
-        if td.endswith(".td")
+    # Initialize target_table to the file name of the .csv extension
+    csv_list = [
+        csv[:-4]
+        for csv in os.listdir(self.file_path)
+        if csv.endswith(".csv")
     ]
     create_table_list = []
-    # Check whether the target_table is created or not
-    for td_name in td_list:
-      required_obj_name = self.check_db_object("table", td_name)
-      if required_obj_name:
-        create_table_list.append(required_obj_name)
+    target_csv_list = []
+    # Check whether the target csv file is added or not
+    for csv in csv_list:
+      if not self.get_sql_result(
+          self.sql_path.joinpath("check_exist_file.sql"),
+          table_name=self.table,
+          tds_file_name=csv
+      ):
+        target_csv_list.append(csv)
+
+    for meta in os.listdir(self.file_path):
+      for csv in target_csv_list:
+        if csv == meta[:-5]:
+          with open(os.path.join(self.file_path, meta), "r") as metafile:
+            meta_datas = json.load(metafile)
+          create_table_list.append(meta_datas["table_name"])
+
     create_table_list = list(set(create_table_list))
 
     print("=============tds_version=============")
