@@ -106,9 +106,9 @@ class DBTableSync(DBTableBase):
 
   def insert_tds_version(self, table_list: list, row_list: list) -> None:
     print(f"### Inserting data into {self.table}")
-    for table in table_list:
+    for csv, table in table_list:
       for row in row_list:
-        if row["table_name"] == table:
+        if row["file_name"] == csv:
           with self.engine.connect() as conn:
             self.load_crud_sql(
                 self.sql_path.joinpath("insert_tds_version.sql"),
@@ -120,8 +120,8 @@ class DBTableSync(DBTableBase):
     print(f"### End of inserting data into {self.table}\n")
 
   def compare_tds_version(self, row_list: list) -> list:
-    required_update_table = []  # Table list that needs synchronization
     required_update_csv = []   # Csv file list that needs to update a tds_version table
+    result_list = []
 
     for row in row_list:
       result = self.get_sql_result(
@@ -131,8 +131,8 @@ class DBTableSync(DBTableBase):
           tds_table_name=row["table_name"],
           tds_csv_hash=row["csv_hash"])
       if result:
-        required_update_table.append(result[0])
-        required_update_csv.append(result[1])
+        required_update_csv.append(result[0])
+        result_list.append(result)
       elif not self.check_db_object(
           "table", row["table_name"]
       ) and not self.get_sql_result(
@@ -140,7 +140,7 @@ class DBTableSync(DBTableBase):
           table_name=row["table_name"]
       ):
         # The target_table is empty and csv file has no changes
-        required_update_table.append(row["table_name"])
+        result_list.append((row["file_name"], row["table_name"]))
 
     # update to tds_version table
     if required_update_csv:
@@ -158,7 +158,7 @@ class DBTableSync(DBTableBase):
       print(f"### End of update into {self.table}\n")
 
     # return required update table list
-    return list(set(required_update_table))
+    return result_list
 
   def create_target_table(self, table: str) -> None:
     # create target table from table definition(.td)
@@ -222,10 +222,10 @@ class DBTableSync(DBTableBase):
     print(f"### COPY temp_{table} FROM {csv}")
 
   def insert_target_table(self, table_list: list, tds_version_list: list) -> None:
-    for table in table_list:
+    for csv, table in table_list:
       print(f"============={table}=============")
       for row in tds_version_list:
-        if row["table_name"] == table:
+        if row["file_name"] == csv:
           print(f"### Inserting data into temp_{table}")
           self.create_temp_target_table(row["file_name"], row["table_name"])
           print(f"### End of inserting data into temp_{table}\n")
@@ -264,9 +264,7 @@ class DBTableSync(DBTableBase):
         if csv == meta[:-5]:
           with open(os.path.join(self.file_path, meta), "r") as metafile:
             meta_datas = json.load(metafile)
-          create_table_list.append(meta_datas["table_name"])
-
-    create_table_list = list(set(create_table_list))
+          create_table_list.append((f"{csv}.csv", meta_datas["table_name"]))
 
     print("=============tds_version=============")
     # Insert csv version of table from create_table_list into the tds_version
@@ -279,6 +277,6 @@ class DBTableSync(DBTableBase):
     if update_table_list:
       print("### Update the table")
       # If the csv file is changed, delete the table and recreate it
-      for table in update_table_list:
+      for csv, table in update_table_list:
         self.drop_table(table)
       self.insert_target_table(update_table_list, row_list)
