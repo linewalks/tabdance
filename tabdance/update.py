@@ -255,7 +255,7 @@ class DBTableSync(DBTableBase):
       if not self.get_sql_result(
           self.sql_path.joinpath("check_exist_file.sql"),
           table_name=self.table,
-          tds_file_name=csv
+          tds_file_name=f"{csv}.csv"
       ):
         target_csv_list.append(csv)
 
