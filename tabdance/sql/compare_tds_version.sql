@@ -1,5 +1,5 @@
 SELECT
-  table_name, file_name
+  file_name, table_name
 FROM
   {schema_name}.{table_name}
 WHERE

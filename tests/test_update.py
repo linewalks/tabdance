@@ -64,6 +64,16 @@ class TestTableSync:
     for prev_csv_hash, current_csv_hash in zip(prev_tabdance_versions, current_tabdance_versions):
       assert prev_csv_hash["csv_hash"] != current_csv_hash["csv_hash"]
 
+  def test_table_sync_when_table_is_empty(self, setup_table_sync, test_tabdance_config):
+    table_sync = DBTableSync(test_tabdance_config)
+    table_sync.sync_table()
+    prev_tabdance_versions = table_sync.get_tds_version()
+
+    # NOTE: setup_csv_meta_td_files() 생성된 파일 내용으로 생성된 테이블이 empty 인 경우 update 대상이 되는지 테스트
+    table_sync.sync_table()
+    current_tabdance_versions = table_sync.get_tds_version()
+    assert prev_tabdance_versions == current_tabdance_versions
+
 
 def drop_schema(config):
   engine = create_engine(config.get("DB", "sqlalchemy_database_uri"))
