@@ -193,7 +193,7 @@ class DBTableSync(DBTableBase):
       headers = next(csv_reader)
 
     # Mapping between csv header and table column, if 'column_match' key exists in .meta
-    meta = os.path.join(self.file_path, f"{os.path.splitext(csv)[0]}.meta")
+    meta = f"{os.path.splitext(csv)[0]}.meta"
     with open(meta, "r") as metafile:
       meta_datas = json.load(metafile)
 
