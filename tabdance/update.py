@@ -77,8 +77,7 @@ class DBTableSync(DBTableBase):
     # Ex. tds download -a
     csv_list = sorted(
         [csv for csv in os.listdir(self.file_path) if csv.endswith(".csv")])
-    meta_list = sorted(
-        [meta for meta in os.listdir(self.file_path) if meta.endswith(".meta")])
+    meta_list = list(map(lambda x: x.replace(".csv", ".meta"), csv_list))
 
     hash_row_list = []
     for csv, meta in zip(csv_list, meta_list):
