@@ -77,8 +77,7 @@ class DBTableSync(DBTableBase):
     # Ex. tds download -a
     csv_list = sorted(
         [csv for csv in os.listdir(self.file_path) if csv.endswith(".csv")])
-    meta_list = sorted(
-        [meta for meta in os.listdir(self.file_path) if meta.endswith(".meta")])
+    meta_list = list(map(lambda x: x.replace(".csv", ".meta"), csv_list))
 
     hash_row_list = []
     for csv, meta in zip(csv_list, meta_list):
@@ -193,7 +192,7 @@ class DBTableSync(DBTableBase):
       headers = next(csv_reader)
 
     # Mapping between csv header and table column, if 'column_match' key exists in .meta
-    meta = os.path.join(self.file_path, f"{os.path.splitext(csv)[0]}.meta")
+    meta = f"{os.path.splitext(csv)[0]}.meta"
     with open(meta, "r") as metafile:
       meta_datas = json.load(metafile)
 
