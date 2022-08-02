@@ -29,7 +29,8 @@ Local repository must exist files, .csv, .meta, .td. <br>
     "columns": [
       {
         "name": "column_name1",
-        "type": "int4"
+        "type": "int4",
+        "primary_key": "boolean"
       },
       {
         "name": "column_name2",
