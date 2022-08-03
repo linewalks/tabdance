@@ -40,7 +40,8 @@ class DBTableBase:
           tds_file_name=kwargs.get("tds_file_name"),
           tds_table_name=kwargs.get("tds_table_name"),
           tds_csv_hash=kwargs.get("tds_csv_hash"),
-          column_info=kwargs.get("column_info")
+          column_info=kwargs.get("column_info"),
+          primary_keys=kwargs.get("primary_keys")
       )
       self.engine.execute(sql)
       end_time = time.time()
@@ -167,6 +168,9 @@ class DBTableSync(DBTableBase):
           [f"{col['name']} {col['type']}" for col in table_schema["columns"]])
       cast_column = ",".join(
           [f"CAST({col['name']} AS {col['type']})" for col in table_schema["columns"]])
+      primary_keys = ",".join(
+          [col["name"] for col in table_schema["columns"] if col.get("primary_key")]
+      )
 
     self.load_crud_sql(
         self.sql_path.joinpath("create_table.sql"),
@@ -181,6 +185,12 @@ class DBTableSync(DBTableBase):
         table_name=table,
         column_info=cast_column
     )
+    if primary_keys:
+      self.load_crud_sql(
+          self.sql_path.joinpath("insert_primary_key.sql"),
+          table_name=table,
+          primary_keys=primary_keys
+      )
 
   def create_temp_target_table(self, csv: str, table: str) -> None:
     # Create temp table
