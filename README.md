@@ -30,11 +30,12 @@ Local repository must exist files, .csv, .meta, .td. <br>
       {
         "name": "column_name1",
         "type": "int4",
-        "primary_key": "boolean"
+        "primary_key": true
       },
       {
         "name": "column_name2",
-        "type": "varchar(255)"
+        "type": "varchar(255)",
+        "primary_key": false // same as not declared primary_key
       },
       ...
     ]
